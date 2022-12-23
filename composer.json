@@ -1,0 +1,21 @@
+{
+    "name": "marcin-jozwikowski/easyadmin-pretty-urls",
+    "description": "Semi-automatic URL generator for pretty REST-like URLs in EasyAdmin",
+    "type": "symfony-bundle",
+    "require": {
+        "php": ">=8.0",
+        "symfony/framework-bundle": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "MarcinJozwikowski\\EasyAdminPrettyUrls\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcin Jóźwikowski",
+            "email": "marcin@jozwikowski.pl"
+        }
+    ]
+}
