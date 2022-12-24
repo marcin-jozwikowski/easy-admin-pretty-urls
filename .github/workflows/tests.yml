@@ -1,4 +1,4 @@
-name: Symfony
+name: Tests
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Execute CS-Fixer
-      run: vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php src/ tests/
+      run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php src/ tests/
     - name: Execute Static Analysis
       run: vendor/bin/phpstan analyse src tests
     - name: Execute tests (Unit and Feature tests) via PHPUnit
