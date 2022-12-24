@@ -4,11 +4,17 @@
     "type": "symfony-bundle",
     "require": {
         "php": ">=8.0",
-        "symfony/framework-bundle": "^5.2"
+        "symfony/framework-bundle": ">=5.2",
+        "easycorp/easyadmin-bundle": "^4.5"
     },
     "autoload": {
         "psr-4": {
             "MarcinJozwikowski\\EasyAdminPrettyUrls\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MarcinJozwikowski\\EasyAdminPrettyUrls\\Tests\\": "tests/"
         }
     },
     "license": "MIT",
@@ -17,5 +23,10 @@
             "name": "Marcin Jóźwikowski",
             "email": "marcin@jozwikowski.pl"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9",
+        "phpstan/phpstan": "^1.9",
+        "friendsofphp/php-cs-fixer": "^3.13"
+    }
 }

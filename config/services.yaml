@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  MarcinJozwikowski\EasyAdminPrettyUrls\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - 'EasyAdminPrettyUrlsBundle.php'
+
+  EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator:
+    arguments:
+      - '@EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider'
+      - '@MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator'
+      - '@EasyCorp\Bundle\EasyAdminBundle\Registry\DashboardControllerRegistry'
+      - '@EasyCorp\Bundle\EasyAdminBundle\Registry\CrudControllerRegistry'
