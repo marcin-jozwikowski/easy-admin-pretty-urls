@@ -81,7 +81,11 @@ class PrettyUrlsGeneratorTest extends TestCase
 
         $this->logger->expects(self::once())
             ->method('debug')
-            ->with('Pretty route not found', ['route_name' => 'some_entity_index']);
+            ->with('Pretty route not found', [
+                'route_name' => 'some_entity_index',
+                'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                'crudAction' => 'index',
+            ]);
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
 

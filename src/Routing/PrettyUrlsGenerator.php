@@ -42,7 +42,11 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             try {
                 return $this->router->generate($prettyName, $prettyParams, $referenceType);
             } catch (RouteNotFoundException $e) {
-                $this->logger->debug('Pretty route not found', ['route_name' => $prettyName]);
+                $this->logger->debug('Pretty route not found', [
+                    'route_name' => $prettyName,
+                    static::EA_FQCN => $parameters[static::EA_FQCN],
+                    static::EA_ACTION => $parameters[static::EA_ACTION],
+                ]);
             }
         }
 
