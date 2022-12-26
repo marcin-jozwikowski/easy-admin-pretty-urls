@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests80:
+  symfony-tests-80:
     runs-on: ubuntu-latest
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
