@@ -16,8 +16,8 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public const EA_ACTION = 'crudAction';
 
     public function __construct(
-        private readonly RouterInterface $router,
-        private readonly LoggerInterface $logger,
+        private RouterInterface $router,
+        private LoggerInterface $logger,
     ) {
     }
 
