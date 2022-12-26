@@ -15,3 +15,7 @@ services:
       - '@MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\DashboardControllerRegistry'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\CrudControllerRegistry'
+
+  MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator:
+    calls:
+      - [ setRoutePrefix, [ '%easy_admin_pretty_urls.route_prefix%' ] ]

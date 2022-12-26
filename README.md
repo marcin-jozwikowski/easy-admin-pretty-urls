@@ -18,10 +18,10 @@
    * `controller` value must point to your projects DashboardController
    * `defaults` `crudControllerFqcn` and `crudAction` must point to your target CRUD controller and its action.
    * `path` can be anything of your choosing
-   * Route name must match the pattern `pretty_<name>_<action>` with `<action>` equal to `crudAction` and name being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_.
+   * Route name must match the pattern `<prefix>_<name>_<action>` with `<action>` equal to `crudAction` and `<name>` being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_. `<prefix>` is set to `pretty` by default. See Configuration to ways to change it. 
 1. Install the bundle by running
    ```shell
-   composer require marcin-jozwikowski/easyadmin-pretty-urls
+   composer require marcin-jozwikowski/easy-admin-pretty-urls
    ```
 1. Enable the bundle by adding it to your `./config/bundles.php`
    ```php
@@ -31,6 +31,21 @@
    ]
    ```
 
+## Configuration
+
+* ### Change route names' prefix
+
+  To change the default `pretty` prefix used in route names set the parameter in your `services.yaml`
+  ```yaml
+    parameters:
+      easy_admin_pretty_urls.route_prefix: 'new_prefix'
+  ```
+
+  Or create a `config/packages/easyadmin_pretty_urls.yaml` file with
+  ```yaml
+    easy_admin_pretty_urls:
+      route_prefix: 'new_prefix'
+  ```
 ## Troubleshooting
 
 * ### Routes not working

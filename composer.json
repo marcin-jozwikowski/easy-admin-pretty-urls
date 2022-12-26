@@ -1,5 +1,5 @@
 {
-    "name": "marcin-jozwikowski/easyadmin-pretty-urls",
+    "name": "marcin-jozwikowski/easy-admin-pretty-urls",
     "description": "Semi-automatic URL generator for pretty REST-like URLs in EasyAdmin",
     "type": "symfony-bundle",
     "require": {

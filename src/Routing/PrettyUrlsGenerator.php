@@ -15,6 +15,8 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public const EA_FQCN = 'crudControllerFqcn';
     public const EA_ACTION = 'crudAction';
 
+    private string $routePrefix = 'pretty';
+
     public function __construct(
         private RouterInterface $router,
         private LoggerInterface $logger,
@@ -60,6 +62,11 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
         $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
         $routeName = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
 
-        return sprintf('pretty_%s_%s', $routeName, strtolower($parameters[static::EA_ACTION]));
+        return sprintf('%s_%s_%s', $this->routePrefix, $routeName, strtolower($parameters[static::EA_ACTION]));
+    }
+
+    public function setRoutePrefix(string $routePrefix): void
+    {
+        $this->routePrefix = $routePrefix;
     }
 }
