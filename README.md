@@ -8,17 +8,17 @@
 
 1. Create a route that will replace your default EasyAdmin CRUD action.
     ```yaml
-    fancy_index:
-        path: /fancy-url
-        controller: \App\Controller\GeneralController::index
+    pretty_foobar_index:
+        path: /foobar-url
+        controller: \App\Controller\EasyAdmin\DashboardController::index
         defaults:
-            crudControllerFqcn: \App\Controller\FancyCrudController
+            crudControllerFqcn: \App\Controller\FoobarCrudController
             crudAction: index
     ```
    * `controller` value must point to your projects DashboardController
    * `defaults` `crudControllerFqcn` and `crudAction` must point to your target CRUD controller and its action.
    * `path` can be anything of your choosing
-   * Route name must match the pattern `<name>_<action>` with `<action>` equal to `crudAction` and name being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_.
+   * Route name must match the pattern `pretty_<name>_<action>` with `<action>` equal to `crudAction` and name being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_.
 1. Install the bundle by running
    ```shell
    composer require marcin-jozwikowski/easyadmin-pretty-urls
