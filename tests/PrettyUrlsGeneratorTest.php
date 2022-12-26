@@ -43,7 +43,7 @@ class PrettyUrlsGeneratorTest extends TestCase
      *
      * @throws \Exception
      */
-    public function testGenerate(array $params, string $expectedName, array $expectedParams): void
+    public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams): void
     {
         $expectedResult = base64_encode(random_bytes(16));
         $this->logger->expects(self::never())
@@ -52,6 +52,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             ->method('generate')
             ->with($expectedName, $expectedParams, UrlGeneratorInterface::ABSOLUTE_PATH)
             ->willReturn($expectedResult);
+        $this->testedClass->setRoutePrefix($prefix);
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
 
@@ -98,8 +99,9 @@ class PrettyUrlsGeneratorTest extends TestCase
     public function generateDataProvider(): array
     {
         return [
-            [[], self::INITIAL_ROUTE_NAME, []],
+            ['pretty', [], self::INITIAL_ROUTE_NAME, []],
             [
+                'pretty',
                 [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityController',
                 ],
@@ -109,6 +111,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                 ],
             ],
             [
+                'pretty',
                 [
                     'crudAction' => 'index',
                 ],
@@ -118,6 +121,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                 ],
             ],
             [
+                'pretty',
                 [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
@@ -126,12 +130,34 @@ class PrettyUrlsGeneratorTest extends TestCase
                 [],
             ],
             [
+                'pretty',
                 [
                     'pageNumber' => 12,
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
                 'pretty_some_entity_index',
+                [
+                    'pageNumber' => 12,
+                ],
+            ],
+            [
+                'other_prefix',
+                [
+                    'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                    'crudAction' => 'index',
+                ],
+                'other_prefix_some_entity_index',
+                [],
+            ],
+            [
+                'other_prefix',
+                [
+                    'pageNumber' => 12,
+                    'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                    'crudAction' => 'index',
+                ],
+                'other_prefix_some_entity_index',
                 [
                     'pageNumber' => 12,
                 ],
