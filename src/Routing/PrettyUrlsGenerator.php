@@ -60,6 +60,6 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
         $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
         $routeName = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
 
-        return sprintf('%s_%s', $routeName, strtolower($parameters[static::EA_ACTION]));
+        return sprintf('pretty_%s_%s', $routeName, strtolower($parameters[static::EA_ACTION]));
     }
 }

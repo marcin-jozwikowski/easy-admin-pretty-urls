@@ -71,7 +71,7 @@ class PrettyUrlsGeneratorTest extends TestCase
 
         $this->router->expects(at(0))
             ->method('generate')
-            ->with('some_entity_index', [], UrlGeneratorInterface::ABSOLUTE_PATH)
+            ->with('pretty_some_entity_index', [], UrlGeneratorInterface::ABSOLUTE_PATH)
             ->willThrowException(new RouteNotFoundException());
 
         $this->router->expects(at(1))
@@ -82,7 +82,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->logger->expects(self::once())
             ->method('debug')
             ->with('Pretty route not found', [
-                'route_name' => 'some_entity_index',
+                'route_name' => 'pretty_some_entity_index',
                 'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                 'crudAction' => 'index',
             ]);
@@ -122,7 +122,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'some_entity_index',
+                'pretty_some_entity_index',
                 [],
             ],
             [
@@ -131,7 +131,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'some_entity_index',
+                'pretty_some_entity_index',
                 [
                     'pageNumber' => 12,
                 ],
