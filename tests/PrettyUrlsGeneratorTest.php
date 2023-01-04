@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 
+use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 
 use function PHPUnit\Framework\at;
@@ -41,7 +42,7 @@ class PrettyUrlsGeneratorTest extends TestCase
      *
      * @dataProvider generateDataProvider
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams): void
     {
@@ -60,7 +61,7 @@ class PrettyUrlsGeneratorTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGenerateNotFound(): void
     {

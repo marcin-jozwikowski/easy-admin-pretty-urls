@@ -2,6 +2,8 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
+    bind:
+      $projectDir: '%kernel.project_dir%'
 
   MarcinJozwikowski\EasyAdminPrettyUrls\:
     resource: '../src/'
@@ -19,3 +21,6 @@ services:
   MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator:
     calls:
       - [ setRoutePrefix, [ '%easy_admin_pretty_urls.route_prefix%' ] ]
+
+  MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader:
+    tags: [routing.loader]

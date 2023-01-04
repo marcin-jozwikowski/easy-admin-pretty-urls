@@ -15,6 +15,7 @@ return (new PhpCsFixer\Config())
         'list_syntax' => ['syntax' => 'short'],
         'array_syntax' => ['syntax' => 'short'],
         'trailing_comma_in_multiline' => ['elements' => ['arrays', 'arguments', 'parameters']],
+        'global_namespace_import' => ['import_classes' => true],
     ])
     ->setFinder($finder)
 ;
