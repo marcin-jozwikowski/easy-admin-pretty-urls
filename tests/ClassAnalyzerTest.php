@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 
+use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesController;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
@@ -18,8 +19,12 @@ class ClassAnalyzerTest extends TestCase
     private MockObject|ReflectionAttribute $reflectionAttribute;
     private ReflectionMethod|MockObject $reflectionMethod;
     private MockObject|ReflectionClass $reflection;
+    private string $randomPrefix;
     private ClassAnalyzer $testedAnalyzer;
 
+    /**
+     * @throws Exception
+     */
     public function setUp(): void
     {
         $this->reflectionAttribute = $this->createMock(ReflectionAttribute::class);
@@ -40,7 +45,12 @@ class ClassAnalyzerTest extends TestCase
             ->withAnyParameters()
             ->willReturn($this->reflectionMethod);
 
-        $this->testedAnalyzer = new ClassAnalyzer();
+        $this->randomPrefix = base64_encode(random_bytes(random_int(1, 3)));
+
+        $this->testedAnalyzer = new ClassAnalyzer(
+            prettyUrlsDefaultDashboard: 'App//Dasboard::index',
+            prettyUrlsRoutePrefix: $this->randomPrefix,
+        );
     }
 
     public function testDefaultBehaviour(): void
@@ -54,15 +64,15 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(5, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals('pretty_specific_index', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_index', $routes[0]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
-        self::assertEquals('pretty_specific_new', $routes[1]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_new', $routes[1]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[2]);
-        self::assertEquals('pretty_specific_detail', $routes[2]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_detail', $routes[2]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[3]);
-        self::assertEquals('pretty_specific_edit', $routes[3]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_edit', $routes[3]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[4]);
-        self::assertEquals('pretty_specific_delete', $routes[4]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_delete', $routes[4]->getName());
     }
 
     public function testActionsProvidedInAttribute(): void
@@ -76,6 +86,6 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals('pretty_specific_someAction', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_someAction', $routes[0]->getName());
     }
 }

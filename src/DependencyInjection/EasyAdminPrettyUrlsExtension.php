@@ -21,6 +21,11 @@ class EasyAdminPrettyUrlsExtension extends Extension
             $config[Configuration::ROUTE_PREFIX_NODE],
         );
 
+        $container->setParameter(
+            Configuration::ROOT_NODE.'.'.Configuration::DEFAULT_DASHBOARD_NODE,
+            $config[Configuration::DEFAULT_DASHBOARD_NODE],
+        );
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

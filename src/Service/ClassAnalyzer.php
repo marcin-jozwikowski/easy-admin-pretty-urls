@@ -15,6 +15,12 @@ use Symfony\Component\Routing\Route;
 
 class ClassAnalyzer
 {
+    public function __construct(
+        private string $prettyUrlsDefaultDashboard,
+        private string $prettyUrlsRoutePrefix,
+    ) {
+    }
+
     /**
      * @return ActionRouteDto[]
      */
@@ -71,14 +77,14 @@ class ClassAnalyzer
             sprintf('/%s/%s', $simpleName, $action),
         ); // @todo Utilize PrettyAttribute in both path parts
         $oneRoute->setDefaults([
-            '_controller' => 'App\Controller\EasyAdmin\DashboardController::index', // @todo Extract into a parameter
+            '_controller' => $this->prettyUrlsDefaultDashboard,
             'crudControllerFqcn' => $reflection->getName(),
             'crudAction' => $action,
         ]);
 
         return new ActionRouteDto(
             // @todo Make a common function for :name and PrettyUrlGenerator - those are exactly the same
-            name: sprintf('pretty_%s_%s', $simpleName, $action),
+            name: sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $simpleName, $action),
             route: $oneRoute,
         );
     }
