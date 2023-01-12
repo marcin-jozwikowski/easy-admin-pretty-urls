@@ -2,6 +2,10 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
+    bind:
+      $projectDir: '%kernel.project_dir%'
+      $prettyUrlsRoutePrefix: '%easy_admin_pretty_urls.route_prefix%'
+      $prettyUrlsDefaultDashboard: '%easy_admin_pretty_urls.default_dashboard%'
 
   MarcinJozwikowski\EasyAdminPrettyUrls\:
     resource: '../src/'
@@ -16,6 +20,5 @@ services:
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\DashboardControllerRegistry'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\CrudControllerRegistry'
 
-  MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator:
-    calls:
-      - [ setRoutePrefix, [ '%easy_admin_pretty_urls.route_prefix%' ] ]
+  MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader:
+    tags: [routing.loader]

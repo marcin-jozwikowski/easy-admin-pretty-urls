@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 
+use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 
 use function PHPUnit\Framework\at;
@@ -28,11 +29,6 @@ class PrettyUrlsGeneratorTest extends TestCase
 
         $this->router = $this->createMock(RouterInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-
-        $this->testedClass = new PrettyUrlsGenerator(
-            router: $this->router,
-            logger: $this->logger,
-        );
     }
 
     /**
@@ -41,7 +37,7 @@ class PrettyUrlsGeneratorTest extends TestCase
      *
      * @dataProvider generateDataProvider
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams): void
     {
@@ -52,7 +48,11 @@ class PrettyUrlsGeneratorTest extends TestCase
             ->method('generate')
             ->with($expectedName, $expectedParams, UrlGeneratorInterface::ABSOLUTE_PATH)
             ->willReturn($expectedResult);
-        $this->testedClass->setRoutePrefix($prefix);
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            prettyUrlsRoutePrefix: $prefix,
+        );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
 
@@ -60,7 +60,7 @@ class PrettyUrlsGeneratorTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGenerateNotFound(): void
     {
@@ -87,6 +87,11 @@ class PrettyUrlsGeneratorTest extends TestCase
                 'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                 'crudAction' => 'index',
             ]);
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            prettyUrlsRoutePrefix: 'pretty',
+        );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
 
