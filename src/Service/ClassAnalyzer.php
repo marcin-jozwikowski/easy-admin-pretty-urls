@@ -8,6 +8,7 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesController;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedActionAttributeException;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedControllerAttributeException;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -18,6 +19,7 @@ class ClassAnalyzer
     public function __construct(
         private string $prettyUrlsDefaultDashboard,
         private string $prettyUrlsRoutePrefix,
+        private bool $prettyUrlsIncludeMenuIndex,
     ) {
     }
 
@@ -72,21 +74,7 @@ class ClassAnalyzer
             throw new RepeatedActionAttributeException($reflection->getName(), $action);
         }
 
-        $simpleName = $this->getSimplifiedControllerName($reflection);
-        $oneRoute = new Route(
-            sprintf('/%s/%s', $simpleName, $action),
-        ); // @todo Utilize PrettyAttribute in both path parts
-        $oneRoute->setDefaults([
-            '_controller' => $this->prettyUrlsDefaultDashboard,
-            'crudControllerFqcn' => $reflection->getName(),
-            'crudAction' => $action,
-        ]);
-
-        return new ActionRouteDto(
-            // @todo Make a common function for :name and PrettyUrlGenerator - those are exactly the same
-            name: sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $simpleName, $action),
-            route: $oneRoute,
-        );
+        return $this->makeRouteDto($reflection, $action);
     }
 
     private function getControllerAttribute(ReflectionClass $reflection): ?ReflectionAttribute
@@ -110,5 +98,32 @@ class ClassAnalyzer
         $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
 
         return strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
+    }
+
+    private function makeRouteDto(ReflectionClass $reflection, string $action): ActionRouteDto
+    {
+        $routePathFormat = '/%s/%s';
+        $routeDefaults = [
+            '_controller' => $this->prettyUrlsDefaultDashboard,
+            PrettyUrlsGenerator::EA_FQCN => $reflection->getName(),
+            PrettyUrlsGenerator::EA_ACTION => $action,
+        ];
+
+        if ($this->prettyUrlsIncludeMenuIndex) {
+            $routePathFormat .= '/DEFAULT_DASHBOARD_NODE{menuPath}';
+            $routeDefaults[PrettyUrlsGenerator::MENU_PATH] = '-1,-1';
+        }
+
+        $simpleName = $this->getSimplifiedControllerName($reflection);
+        $oneRoute = new Route(
+            path: sprintf($routePathFormat, $simpleName, $action),
+        ); // @todo Utilize PrettyAttribute in both path parts
+        $oneRoute->setDefaults($routeDefaults);
+
+        return new ActionRouteDto(
+            // @todo Make a common function for :name and PrettyUrlGenerator - those are exactly the same
+            name: sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $simpleName, $action),
+            route: $oneRoute,
+        );
     }
 }
