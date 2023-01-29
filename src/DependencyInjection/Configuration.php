@@ -10,6 +10,7 @@ class Configuration implements ConfigurationInterface
     public const ROOT_NODE = 'easy_admin_pretty_urls';
     public const ROUTE_PREFIX_NODE = 'route_prefix';
     public const DEFAULT_DASHBOARD_NODE = 'default_dashboard';
+    public const INCLUDE_MENU_INDEX_NODE = 'include_menu_index';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -23,6 +24,9 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode(self::DEFAULT_DASHBOARD_NODE)
                     ->defaultValue('App\\Controller\\EasyAdmin\\DashboardController::index')
+                ->end()
+                ->booleanNode(self::INCLUDE_MENU_INDEX_NODE)
+                    ->defaultFalse()
                 ->end()
             ->end();
 

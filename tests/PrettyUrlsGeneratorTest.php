@@ -39,7 +39,7 @@ class PrettyUrlsGeneratorTest extends TestCase
      *
      * @throws Exception
      */
-    public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams): void
+    public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams, bool $includeMenuIndex): void
     {
         $expectedResult = base64_encode(random_bytes(16));
         $this->logger->expects(self::never())
@@ -52,6 +52,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             router: $this->router,
             logger: $this->logger,
             prettyUrlsRoutePrefix: $prefix,
+            prettyUrlsIncludeMenuIndex: $includeMenuIndex,
         );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
@@ -91,6 +92,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             router: $this->router,
             logger: $this->logger,
             prettyUrlsRoutePrefix: 'pretty',
+            prettyUrlsIncludeMenuIndex: false,
         );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
@@ -104,68 +106,109 @@ class PrettyUrlsGeneratorTest extends TestCase
     public function generateDataProvider(): array
     {
         return [
-            ['pretty', [], self::INITIAL_ROUTE_NAME, []],
-            [
-                'pretty',
-                [
+            'completelyEmpty' => [
+                'prefix' => 'pretty',
+                'params' => [],
+                'expectedName' => self::INITIAL_ROUTE_NAME,
+                'expectedParams' => [],
+                'includeMenuIndex' => false,
+            ],
+            'onlyControllerNameProvided' => [
+                'prefix' => 'pretty',
+                'params' => [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityController',
                 ],
-                self::INITIAL_ROUTE_NAME,
-                [
+                'expectedName' => self::INITIAL_ROUTE_NAME,
+                'expectedParams' => [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityController',
                 ],
+                'includeMenuIndex' => false,
             ],
-            [
-                'pretty',
-                [
+            'onlyActionProvided' => [
+                'prefix' => 'pretty',
+                'params' => [
                     'crudAction' => 'index',
                 ],
-                self::INITIAL_ROUTE_NAME,
-                [
+                'expectedName' => self::INITIAL_ROUTE_NAME,
+                'expectedParams' => [
                     'crudAction' => 'index',
                 ],
+                'includeMenuIndex' => false,
             ],
-            [
-                'pretty',
-                [
+            'controllerAndActionProvided' => [
+                'prefix' => 'pretty',
+                'params' => [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'pretty_some_entity_index',
-                [],
+                'expectedName' => 'pretty_some_entity_index',
+                'expectedParams' => [],
+                'includeMenuIndex' => false,
             ],
-            [
-                'pretty',
-                [
+            'additionalParameterProvided' => [
+                'prefix' => 'pretty',
+                'params' => [
                     'pageNumber' => 12,
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'pretty_some_entity_index',
-                [
+                'expectedName' => 'pretty_some_entity_index',
+                'expectedParams' => [
                     'pageNumber' => 12,
                 ],
+                'includeMenuIndex' => false,
             ],
-            [
-                'other_prefix',
-                [
+            'nonDefaultPrefix' => [
+                'prefix' => 'other_prefix',
+                'params' => [
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'other_prefix_some_entity_index',
-                [],
+                'expectedName' => 'other_prefix_some_entity_index',
+                'expectedParams' => [],
+                'includeMenuIndex' => false,
             ],
-            [
-                'other_prefix',
-                [
+            'nonDefaultPrefixWithAdditionalParam' => [
+                'prefix' => 'other_prefix',
+                'params' => [
                     'pageNumber' => 12,
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'other_prefix_some_entity_index',
-                [
+                'expectedName' => 'other_prefix_some_entity_index',
+                'expectedParams' => [
                     'pageNumber' => 12,
                 ],
+                'includeMenuIndex' => false,
+            ],
+            'menuIndexProvidedWhenDisabled' => [
+                'prefix' => 'pretty',
+                'params' => [
+                    'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                    'crudAction' => 'index',
+                    'menuIndex' => 1,
+                    'submenuIndex' => 2,
+                ],
+                'expectedName' => 'pretty_some_entity_index',
+                'expectedParams' => [
+                    'menuIndex' => 1,
+                    'submenuIndex' => 2,
+                ],
+                'includeMenuIndex' => false,
+            ],
+            'menuIndexProvidedAndEnabled' => [
+                'prefix' => 'pretty',
+                'params' => [
+                    'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                    'crudAction' => 'index',
+                    'menuIndex' => 1,
+                    'submenuIndex' => 2,
+                ],
+                'expectedName' => 'pretty_some_entity_index',
+                'expectedParams' => [
+                    'menuPath' => '1,2',
+                ],
+                'includeMenuIndex' => true,
             ],
         ];
     }

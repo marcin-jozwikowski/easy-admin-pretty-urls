@@ -37,5 +37,12 @@ class PrettyUrlsRouterSubscriber implements EventSubscriberInterface
                 $request->attributes->remove($attributeName);
             }
         }
+
+        if ($request->attributes->has(PrettyUrlsGenerator::MENU_PATH)) {
+            [$menuIndex, $submenuIndex] = explode(',', $request->attributes->get(PrettyUrlsGenerator::MENU_PATH));
+            $request->query->set(PrettyUrlsGenerator::EA_MENU_INDEX, $menuIndex);
+            $request->query->set(PrettyUrlsGenerator::EA_SUBMENU_INDEX, $submenuIndex);
+            $request->attributes->remove(PrettyUrlsGenerator::MENU_PATH);
+        }
     }
 }

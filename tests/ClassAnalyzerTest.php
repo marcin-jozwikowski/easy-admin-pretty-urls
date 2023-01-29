@@ -50,6 +50,7 @@ class ClassAnalyzerTest extends TestCase
         $this->testedAnalyzer = new ClassAnalyzer(
             prettyUrlsDefaultDashboard: 'App//Dasboard::index',
             prettyUrlsRoutePrefix: $this->randomPrefix,
+            prettyUrlsIncludeMenuIndex: false,
         );
     }
 

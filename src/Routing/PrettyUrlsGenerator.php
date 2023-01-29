@@ -14,11 +14,15 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
 {
     public const EA_FQCN = 'crudControllerFqcn';
     public const EA_ACTION = 'crudAction';
+    public const EA_MENU_INDEX = 'menuIndex';
+    public const EA_SUBMENU_INDEX = 'submenuIndex';
+    public const MENU_PATH = 'menuPath';
 
     public function __construct(
         private RouterInterface $router,
         private LoggerInterface $logger,
         private string $prettyUrlsRoutePrefix,
+        private bool $prettyUrlsIncludeMenuIndex,
     ) {
     }
 
@@ -39,6 +43,12 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             $prettyParams = $parameters;
             unset($prettyParams[static::EA_FQCN]);
             unset($prettyParams[static::EA_ACTION]);
+
+            if ($this->prettyUrlsIncludeMenuIndex && $menuIndex = $this->generateMenuIndexPart($parameters)) {
+                unset($prettyParams[static::EA_MENU_INDEX]);
+                unset($prettyParams[static::EA_SUBMENU_INDEX]);
+                $prettyParams[self::MENU_PATH] = $menuIndex;
+            }
 
             try {
                 return $this->router->generate($prettyName, $prettyParams, $referenceType);
@@ -62,5 +72,14 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
         $routeName = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
 
         return sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $routeName, strtolower($parameters[static::EA_ACTION]));
+    }
+
+    private function generateMenuIndexPart(array $parameters): ?string
+    {
+        return sprintf(
+            '%d,%d',
+            $parameters[self::EA_MENU_INDEX] ?? -1,
+            $parameters[self::EA_SUBMENU_INDEX] ?? -1,
+        );
     }
 }
