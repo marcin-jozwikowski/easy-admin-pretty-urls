@@ -110,7 +110,7 @@ class ClassAnalyzer
         ];
 
         if ($this->prettyUrlsIncludeMenuIndex) {
-            $routePathFormat .= '/DEFAULT_DASHBOARD_NODE{menuPath}';
+            $routePathFormat .= '/{menuPath}';
             $routeDefaults[PrettyUrlsGenerator::MENU_PATH] = '-1,-1';
         }
 
