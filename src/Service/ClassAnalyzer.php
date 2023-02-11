@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Service;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;

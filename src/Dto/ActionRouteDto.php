@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Dto;
 
 use Symfony\Component\Routing\Route;
