@@ -26,7 +26,7 @@ use ReflectionMethod;
  */
 class ClassAnalyzerTest extends TestCase
 {
-    const DEFAULT_DASHBOARD = 'App//Dasboard::index';
+    public const DEFAULT_DASHBOARD = 'App//Dasboard::index';
 
     private MockObject|ReflectionAttribute $reflectionAttribute;
     private ReflectionMethod|MockObject $reflectionMethod;
@@ -135,7 +135,6 @@ class ClassAnalyzerTest extends TestCase
         self::assertArrayHasKey('crudAction', $routes[0]->getRoute()->getDefaults());
         self::assertArrayHasKey('menuPath', $routes[0]->getRoute()->getDefaults());
     }
-
 
     /*
      * Default action list is used but this time there's a ReflectionException for each call

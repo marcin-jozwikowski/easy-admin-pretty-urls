@@ -12,8 +12,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
-use Symfony\Component\Console\Input\Input;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -48,8 +46,8 @@ class DebugPrettyRoutesCommandTest extends TestCase
                 defaults: [
                     PrettyUrlsGenerator::EA_FQCN => $resource,
                     PrettyUrlsGenerator::EA_ACTION => $resource,
-                ]
-            )
+                ],
+            ),
         );
 
         $this->routesLoader->expects(self::once())

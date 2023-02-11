@@ -47,6 +47,7 @@ class PrettyRoutesLoaderTest extends TestCase
 
     /**
      * @throws Exception
+     *
      * @dataProvider supportedTypesDataProvider
      */
     public function testSupportedTypes(string $type, bool $expected): void
@@ -59,6 +60,7 @@ class PrettyRoutesLoaderTest extends TestCase
 
     /**
      * @return array<int, array<int, string|bool>>
+     *
      * @throws Exception
      */
     public function supportedTypesDataProvider(): array
@@ -94,7 +96,7 @@ class PrettyRoutesLoaderTest extends TestCase
                         name: $routeName,
                         route: new Route(path: 'path/to/'.$routeName),
                     ),
-                ]
+                ],
             );
 
         $loadedRoutes = $this->testedClass->load($resource);
@@ -107,7 +109,7 @@ class PrettyRoutesLoaderTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testLoad_NoValidClasses(): void
+    public function testLoadNoValidClasses(): void
     {
         $resource = md5(random_bytes(random_int(6, 8)));
         $routeName = md5(random_bytes(random_int(6, 8)));

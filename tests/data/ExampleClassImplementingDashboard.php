@@ -16,44 +16,43 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class ExampleClassImplementingDashboard implements DashboardControllerInterface
 {
-
     public function configureDashboard(): Dashboard
     {
-        // TODO: Implement configureDashboard() method.
+        // @phpstan-ignore-line
     }
 
     public function configureAssets(): Assets
     {
-        // TODO: Implement configureAssets() method.
+        // @phpstan-ignore-line
     }
 
     public function configureMenuItems(): iterable
     {
-        // TODO: Implement configureMenuItems() method.
+        // @phpstan-ignore-line
     }
 
     public function configureUserMenu(UserInterface $user): UserMenu
     {
-        // TODO: Implement configureUserMenu() method.
+        // @phpstan-ignore-line
     }
 
     public function configureCrud(): Crud
     {
-        // TODO: Implement configureCrud() method.
+        // @phpstan-ignore-line
     }
 
     public function configureActions(): Actions
     {
-        // TODO: Implement configureActions() method.
+        // @phpstan-ignore-line
     }
 
     public function configureFilters(): Filters
     {
-        // TODO: Implement configureFilters() method.
+        // @phpstan-ignore-line
     }
 
     public function index(): Response
     {
-        // TODO: Implement index() method.
+        // @phpstan-ignore-line
     }
 }

@@ -7,7 +7,6 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 
-use Symfony\Component\Routing\RequestContext;
 use function PHPUnit\Framework\at;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
