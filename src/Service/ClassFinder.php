@@ -37,7 +37,7 @@ class ClassFinder
         $contents = file_get_contents($file->getRealPath());
         if (preg_match('/^\s*(?:abstract\s+|final\s+)?(?:class|trait)\s+(\w+)/mi', $contents, $matches)) {
             $className = $matches[1];
-            $namespace = $this->getNamespaceFromFile($file);
+            $namespace = $this->getNamespaceFromContent($contents);
             if ($namespace) {
                 $className = "$namespace\\$className";
             }
@@ -48,9 +48,8 @@ class ClassFinder
         return null;
     }
 
-    private function getNamespaceFromFile(SplFileInfo $file): ?string
+    private function getNamespaceFromContent(string $contents): ?string
     {
-        $contents = file_get_contents($file->getRealPath());
         if (preg_match('/^\s*namespace\s+(.+?);/mi', $contents, $matches)) {
             $namespace = $matches[1];
 

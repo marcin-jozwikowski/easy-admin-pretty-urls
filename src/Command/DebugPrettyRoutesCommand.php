@@ -25,6 +25,9 @@ class DebugPrettyRoutesCommand extends Command
         parent::__construct($name);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function configure(): void
     {
         $this

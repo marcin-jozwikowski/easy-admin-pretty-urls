@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
+/**
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\EventSubscriber\PrettyUrlsRouterSubscriber
+ */
 class PrettyUrlsRouterSubscriberTest extends TestCase
 {
     private const CRUD_FQCN = 'crudControllerFqcn';
@@ -36,7 +39,7 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
         $request->query = $this->query;
 
         $this->event = $this->createMock(RequestEvent::class);
-        $this->event->expects(self::once())
+        $this->event->expects(self::atMost(1))
             ->method('getRequest')
             ->willReturn($request);
 
@@ -125,5 +128,15 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             ->willReturn(null);
 
         $this->testedClass->onKernelRequest($this->event);
+    }
+
+    public function testGetSubscribedEvents(): void
+    {
+        $events = $this->testedClass::getSubscribedEvents();
+        self::assertEquals([
+            RequestEvent::class => [
+                ['onKernelRequest', 1],
+            ],
+        ], $events);
     }
 }

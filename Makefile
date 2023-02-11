@@ -5,3 +5,6 @@ test:
 
 fix:
 	vendor/bin/php-cs-fixer fix --diff --config=.php-cs-fixer.php src/ tests/
+
+unit-coverage:
+	php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-html .phpunit.cache/coverage-html

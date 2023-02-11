@@ -7,6 +7,7 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 
+use Symfony\Component\Routing\RequestContext;
 use function PHPUnit\Framework\at;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,6 +17,9 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator
+ */
 class PrettyUrlsGeneratorTest extends TestCase
 {
     private const INITIAL_ROUTE_NAME = 'route_name';
@@ -29,6 +33,39 @@ class PrettyUrlsGeneratorTest extends TestCase
 
         $this->router = $this->createMock(RouterInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+    }
+
+    public function testContextSetting(): void
+    {
+        $context = new RequestContext();
+        $this->router->expects(self::once())
+            ->method('setContext')
+            ->with($context);
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            prettyUrlsRoutePrefix: 'pretty',
+            prettyUrlsIncludeMenuIndex: false,
+        );
+
+        $this->testedClass->setContext($context);
+    }
+
+    public function testContextGetting(): void
+    {
+        $context = new RequestContext();
+        $this->router->expects(self::once())
+            ->method('getContext')
+            ->willReturn($context);
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            prettyUrlsRoutePrefix: 'pretty',
+            prettyUrlsIncludeMenuIndex: false,
+        );
+        $result = $this->testedClass->getContext();
+
+        self::assertEquals($context, $result);
     }
 
     /**

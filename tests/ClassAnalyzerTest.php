@@ -5,17 +5,29 @@ declare(strict_types=1);
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 
 use Exception;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesAction;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesController;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedActionAttributeException;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedControllerAttributeException;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 
+/**
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedActionAttributeException
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedControllerAttributeException
+ */
 class ClassAnalyzerTest extends TestCase
 {
+    const DEFAULT_DASHBOARD = 'App//Dasboard::index';
+
     private MockObject|ReflectionAttribute $reflectionAttribute;
     private ReflectionMethod|MockObject $reflectionMethod;
     private MockObject|ReflectionClass $reflection;
@@ -48,12 +60,15 @@ class ClassAnalyzerTest extends TestCase
         $this->randomPrefix = base64_encode(random_bytes(random_int(1, 3)));
 
         $this->testedAnalyzer = new ClassAnalyzer(
-            prettyUrlsDefaultDashboard: 'App//Dasboard::index',
+            prettyUrlsDefaultDashboard: self::DEFAULT_DASHBOARD,
             prettyUrlsRoutePrefix: $this->randomPrefix,
             prettyUrlsIncludeMenuIndex: false,
         );
     }
 
+    /*
+     * Each action in default list will return the same default parameters
+     */
     public function testDefaultBehaviour(): void
     {
         $this->reflection->expects(self::any())
@@ -76,6 +91,9 @@ class ClassAnalyzerTest extends TestCase
         self::assertEquals($this->randomPrefix.'_specific_delete', $routes[4]->getName());
     }
 
+    /*
+     * Actions list is defined in attribute
+     */
     public function testActionsProvidedInAttribute(): void
     {
         $this->reflection->expects(self::any())
@@ -88,5 +106,72 @@ class ClassAnalyzerTest extends TestCase
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals($this->randomPrefix.'_specific_someAction', $routes[0]->getName());
+    }
+
+    /*
+     * Actions list is defined in attribute and menu index should be included in route
+     */
+    public function testMenuIndexEnabledInRoutes(): void
+    {
+        $this->reflection->expects(self::any())
+            ->method('getAttributes')
+            ->with(PrettyRoutesController::class)
+            ->willReturn([$this->reflectionAttribute]);
+
+        $this->testedAnalyzer = new ClassAnalyzer(
+            prettyUrlsDefaultDashboard: self::DEFAULT_DASHBOARD,
+            prettyUrlsRoutePrefix: $this->randomPrefix,
+            prettyUrlsIncludeMenuIndex: true,
+        );
+
+        $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+
+        self::assertCount(1, $routes);
+        self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
+        self::assertEquals($this->randomPrefix.'_specific_someAction', $routes[0]->getName());
+        self::assertArrayHasKey('_controller', $routes[0]->getRoute()->getDefaults());
+        self::assertEquals(self::DEFAULT_DASHBOARD, $routes[0]->getRoute()->getDefaults()['_controller']);
+        self::assertArrayHasKey('crudControllerFqcn', $routes[0]->getRoute()->getDefaults());
+        self::assertArrayHasKey('crudAction', $routes[0]->getRoute()->getDefaults());
+        self::assertArrayHasKey('menuPath', $routes[0]->getRoute()->getDefaults());
+    }
+
+
+    /*
+     * Default action list is used but this time there's a ReflectionException for each call
+     */
+    public function testReflectionExceptionOnGetMethod(): void
+    {
+        $this->reflection->expects(self::any())
+            ->method('getMethod')
+            ->withAnyParameters()
+            ->willThrowException(new ReflectionException());
+
+        $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+        self::assertCount(0, $routes);
+    }
+
+    public function testDuplicatedAttributeForAction(): void
+    {
+        $this->reflectionMethod->expects(self::any())
+            ->method('getAttributes')
+            ->with(PrettyRoutesAction::class)
+            ->willReturn([$this->reflectionAttribute, $this->reflectionAttribute]);
+
+        self::expectException(RepeatedActionAttributeException::class);
+        self::expectExceptionMessage('More than one PrettyRoutesAction attribute was found in App\Namespace\SpecificCrudController::index');
+        $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+    }
+
+    public function testDuplicatedAttributeForController(): void
+    {
+        $this->reflection->expects(self::any())
+            ->method('getAttributes')
+            ->with(PrettyRoutesController::class)
+            ->willReturn([$this->reflectionAttribute, $this->reflectionAttribute]);
+
+        self::expectException(RepeatedControllerAttributeException::class);
+        self::expectExceptionMessage('More than one PrettyRoutesController attribute was found in App\Namespace\SpecificCrudController');
+        $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
     }
 }
