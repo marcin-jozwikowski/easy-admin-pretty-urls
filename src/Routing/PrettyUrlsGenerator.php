@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Routing;
 
+use MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -21,7 +22,7 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public function __construct(
         private RouterInterface $router,
         private LoggerInterface $logger,
-        private string $prettyUrlsRoutePrefix,
+        private RouteNamingGenerator $routeNamingGenerator,
         private bool $prettyUrlsIncludeMenuIndex,
     ) {
     }
@@ -66,12 +67,9 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
 
     private function generateNameFromParameters(array $parameters): string
     {
-        $classNameA = explode('\\', $parameters[static::EA_FQCN]);
-        $className = end($classNameA);
-        $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
-        $routeName = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
+        $className = $this->routeNamingGenerator->generateSimplifiedClassName($parameters[static::EA_FQCN]);
 
-        return sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $routeName, strtolower($parameters[static::EA_ACTION]));
+        return $this->routeNamingGenerator->generateRouteName($className, $parameters[static::EA_ACTION]);
     }
 
     private function generateMenuIndexPart(array $parameters): ?string
