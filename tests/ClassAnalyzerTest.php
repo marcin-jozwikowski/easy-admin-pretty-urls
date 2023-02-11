@@ -11,6 +11,7 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedActionAttributeException;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedControllerAttributeException;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionAttribute;
@@ -20,6 +21,7 @@ use ReflectionMethod;
 
 /**
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedActionAttributeException
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RepeatedControllerAttributeException
@@ -60,8 +62,8 @@ class ClassAnalyzerTest extends TestCase
         $this->randomPrefix = base64_encode(random_bytes(random_int(1, 3)));
 
         $this->testedAnalyzer = new ClassAnalyzer(
+            routeNamingGenerator: new RouteNamingGenerator($this->randomPrefix),
             prettyUrlsDefaultDashboard: self::DEFAULT_DASHBOARD,
-            prettyUrlsRoutePrefix: $this->randomPrefix,
             prettyUrlsIncludeMenuIndex: false,
         );
     }
@@ -105,7 +107,7 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals($this->randomPrefix.'_specific_someAction', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_someaction', $routes[0]->getName());
     }
 
     /*
@@ -119,8 +121,8 @@ class ClassAnalyzerTest extends TestCase
             ->willReturn([$this->reflectionAttribute]);
 
         $this->testedAnalyzer = new ClassAnalyzer(
+            routeNamingGenerator: new RouteNamingGenerator($this->randomPrefix),
             prettyUrlsDefaultDashboard: self::DEFAULT_DASHBOARD,
-            prettyUrlsRoutePrefix: $this->randomPrefix,
             prettyUrlsIncludeMenuIndex: true,
         );
 
@@ -128,7 +130,7 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals($this->randomPrefix.'_specific_someAction', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_someaction', $routes[0]->getName());
         self::assertArrayHasKey('_controller', $routes[0]->getRoute()->getDefaults());
         self::assertEquals(self::DEFAULT_DASHBOARD, $routes[0]->getRoute()->getDefaults()['_controller']);
         self::assertArrayHasKey('crudControllerFqcn', $routes[0]->getRoute()->getDefaults());

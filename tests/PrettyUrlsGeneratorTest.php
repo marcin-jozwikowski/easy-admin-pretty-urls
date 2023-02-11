@@ -6,9 +6,7 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
-
-use function PHPUnit\Framework\at;
-
+use MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -17,8 +15,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 
+use function PHPUnit\Framework\at;
+
 /**
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator
  */
 class PrettyUrlsGeneratorTest extends TestCase
 {
@@ -44,7 +45,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->testedClass = new PrettyUrlsGenerator(
             router: $this->router,
             logger: $this->logger,
-            prettyUrlsRoutePrefix: 'pretty',
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
         );
 
@@ -60,7 +61,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->testedClass = new PrettyUrlsGenerator(
             router: $this->router,
             logger: $this->logger,
-            prettyUrlsRoutePrefix: 'pretty',
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
         );
         $result = $this->testedClass->getContext();
@@ -88,7 +89,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->testedClass = new PrettyUrlsGenerator(
             router: $this->router,
             logger: $this->logger,
-            prettyUrlsRoutePrefix: $prefix,
+            routeNamingGenerator: new RouteNamingGenerator($prefix),
             prettyUrlsIncludeMenuIndex: $includeMenuIndex,
         );
 
@@ -128,7 +129,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->testedClass = new PrettyUrlsGenerator(
             router: $this->router,
             logger: $this->logger,
-            prettyUrlsRoutePrefix: 'pretty',
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
         );
 

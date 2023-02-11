@@ -19,8 +19,8 @@ use Symfony\Component\Routing\Route;
 class ClassAnalyzer
 {
     public function __construct(
+        private RouteNamingGenerator $routeNamingGenerator,
         private string $prettyUrlsDefaultDashboard,
-        private string $prettyUrlsRoutePrefix,
         private bool $prettyUrlsIncludeMenuIndex,
     ) {
     }
@@ -92,16 +92,6 @@ class ClassAnalyzer
         return reset($controllerAttributes);
     }
 
-    private function getSimplifiedControllerName(ReflectionClass $reflection): string
-    {
-        // @todo Make a common function for this and PrettyUrlGenerator - those are exactly the same
-        $classNameA = explode('\\', $reflection->getName());
-        $className = end($classNameA);
-        $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
-
-        return strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($className)));
-    }
-
     private function makeRouteDto(ReflectionClass $reflection, string $action): ActionRouteDto
     {
         $routePathFormat = '/%s/%s';
@@ -116,15 +106,14 @@ class ClassAnalyzer
             $routeDefaults[PrettyUrlsGenerator::MENU_PATH] = '-1,-1';
         }
 
-        $simpleName = $this->getSimplifiedControllerName($reflection);
+        $simpleName = $this->routeNamingGenerator->generateSimplifiedClassName($reflection->getName());
         $oneRoute = new Route(
             path: sprintf($routePathFormat, $simpleName, $action),
         ); // @todo Utilize PrettyAttribute in both path parts
         $oneRoute->setDefaults($routeDefaults);
 
         return new ActionRouteDto(
-            // @todo Make a common function for :name and PrettyUrlGenerator - those are exactly the same
-            name: sprintf('%s_%s_%s', $this->prettyUrlsRoutePrefix, $simpleName, $action),
+            name: $this->routeNamingGenerator->generateRouteName($simpleName, $action),
             route: $oneRoute,
         );
     }
