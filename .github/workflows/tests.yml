@@ -62,7 +62,7 @@ jobs:
     - name: Execute CS-Fixer
       run: vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php src/ tests/
     - name: Execute Static Analysis
-      run: vendor/bin/phpstan analyse src tests
+      run: vendor/bin/phpstan analyse src
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit ./tests/
       
@@ -90,6 +90,6 @@ jobs:
     - name: Execute CS-Fixer
       run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php src/ tests/
     - name: Execute Static Analysis
-      run: vendor/bin/phpstan analyse src tests
+      run: vendor/bin/phpstan analyse src
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit ./tests/

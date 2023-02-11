@@ -18,12 +18,12 @@ class ClassFinderTest extends TestCase
     {
         $finder = new ClassFinder(__DIR__.DIRECTORY_SEPARATOR.'..');
         $names = $finder->getClassNames('tests/data');
-        natcasesort($names);
+        $names = array_flip($names);
 
         self::assertIsArray($names);
         self::assertCount(3, $names);
-        self::assertEquals(ExampleClassImplementingDashboard::class, $names[0]);
-        self::assertEquals(ExampleClass::class, $names[1]);
-        self::assertEquals('ExampleClassWithNoNamespace', $names[2]);
+        self::assertArrayHasKey(ExampleClassImplementingDashboard::class, $names);
+        self::assertArrayHasKey(ExampleClass::class, $names);
+        self::assertArrayHasKey('ExampleClassWithNoNamespace', $names);
     }
 }
