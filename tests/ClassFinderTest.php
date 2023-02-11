@@ -18,6 +18,7 @@ class ClassFinderTest extends TestCase
     {
         $finder = new ClassFinder(__DIR__.DIRECTORY_SEPARATOR.'..');
         $names = $finder->getClassNames('tests/data');
+        natcasesort($names);
 
         self::assertIsArray($names);
         self::assertCount(3, $names);
