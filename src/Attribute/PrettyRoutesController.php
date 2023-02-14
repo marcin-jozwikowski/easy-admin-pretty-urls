@@ -10,14 +10,12 @@ use Attribute;
 class PrettyRoutesController
 {
     public const ARGUMENT_ACTIONS = 'actions';
-    public const ARGUMENT_NAME = 'name';
 
     /**
      * @param string[]|null $actions
      */
     public function __construct(
         public ?array $actions = null,
-        public ?string $name = null,
     ) {
     }
 }

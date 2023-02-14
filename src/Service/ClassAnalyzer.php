@@ -65,17 +65,17 @@ class ClassAnalyzer
     private function getRouteForAction(ReflectionClass $reflection, string $action): ?ActionRouteDto
     {
         try {
-            $reflectionMethod = $reflection->getMethod($action);
+            $actionAttribute = $this->getActionAttribute($reflection, $action);
         } catch (ReflectionException) {
             return null;
         }
 
-        $actionAttribute = $reflectionMethod->getAttributes(PrettyRoutesAction::class);
-        if (count($actionAttribute) > 1) {
-            throw new RepeatedActionAttributeException($reflection->getName(), $action);
+        $actionPath = $action;
+        if ($actionAttribute instanceof ReflectionAttribute) {
+            $actionPath = $actionAttribute->getArguments()[PrettyRoutesAction::ARGUMENT_PATH] ?? $action;
         }
 
-        return $this->makeRouteDto($reflection, $action);
+        return $this->makeRouteDto(reflection: $reflection, action: $action, actionPath: $actionPath);
     }
 
     private function getControllerAttribute(ReflectionClass $reflection): ?ReflectionAttribute
@@ -91,7 +91,7 @@ class ClassAnalyzer
         return reset($controllerAttributes);
     }
 
-    private function makeRouteDto(ReflectionClass $reflection, string $action): ActionRouteDto
+    private function makeRouteDto(ReflectionClass $reflection, string $action, string $actionPath): ActionRouteDto
     {
         $routePathFormat = '/%s/%s';
         $routeDefaults = [
@@ -109,8 +109,19 @@ class ClassAnalyzer
 
         return new ActionRouteDto(
             name: $this->routeNamingGenerator->generateRouteName($simpleName, $action),
-            path: sprintf($routePathFormat, $simpleName, $action),
+            path: sprintf($routePathFormat, $simpleName, $actionPath),
             defaults: $routeDefaults,
         );
+    }
+
+    private function getActionAttribute(ReflectionClass $reflection, string $action): ReflectionAttribute|bool|null
+    {
+        $reflectionMethod = $reflection->getMethod($action);
+        $actionAttributes = $reflectionMethod->getAttributes(PrettyRoutesAction::class);
+        if (count($actionAttributes) > 1) {
+            throw new RepeatedActionAttributeException($reflection->getName(), $action);
+        }
+
+        return reset($actionAttributes);
     }
 }

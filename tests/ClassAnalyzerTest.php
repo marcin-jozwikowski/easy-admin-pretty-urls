@@ -35,6 +35,7 @@ class ClassAnalyzerTest extends TestCase
     private MockObject|ReflectionClass $reflection;
     private string $randomPrefix;
     private ClassAnalyzer $testedAnalyzer;
+    private MockObject|ReflectionAttribute $reflectionActionAttribute;
 
     /**
      * @throws Exception
@@ -45,6 +46,11 @@ class ClassAnalyzerTest extends TestCase
         $this->reflectionAttribute->expects(self::any())
             ->method('getArguments')
             ->willReturn([PrettyRoutesController::ARGUMENT_ACTIONS => ['someAction']]);
+
+        $this->reflectionActionAttribute = $this->createMock(ReflectionAttribute::class);
+        $this->reflectionActionAttribute->expects(self::any())
+            ->method('getArguments')
+            ->willReturn([PrettyRoutesAction::ARGUMENT_PATH => 'newPath']);
 
         $this->reflectionMethod = $this->createMock(ReflectionMethod::class);
 
@@ -174,5 +180,26 @@ class ClassAnalyzerTest extends TestCase
         self::expectException(RepeatedControllerAttributeException::class);
         self::expectExceptionMessage('More than one PrettyRoutesController attribute was found in App\Namespace\SpecificCrudController');
         $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+    }
+
+    public function testActionAttributePath(): void
+    {
+        $this->reflectionMethod->expects(self::any())
+            ->method('getAttributes')
+            ->with(PrettyRoutesAction::class)
+            ->willReturn([$this->reflectionActionAttribute]);
+
+        $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+        self::assertCount(5, $routes);
+        self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
+        self::assertEquals('/specific/newPath', $routes[0]->getPath());
+        self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
+        self::assertEquals('/specific/newPath', $routes[1]->getPath());
+        self::assertInstanceOf(ActionRouteDto::class, $routes[2]);
+        self::assertEquals('/specific/newPath', $routes[2]->getPath());
+        self::assertInstanceOf(ActionRouteDto::class, $routes[3]);
+        self::assertEquals('/specific/newPath', $routes[3]->getPath());
+        self::assertInstanceOf(ActionRouteDto::class, $routes[4]);
+        self::assertEquals('/specific/newPath', $routes[4]->getPath());
     }
 }
