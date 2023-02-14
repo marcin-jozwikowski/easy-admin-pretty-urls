@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Dto;
 
-use Symfony\Component\Routing\Route;
-
 class ActionRouteDto
 {
     public function __construct(
         private string $name,
-        private Route $route,
+        private string $path,
+        private array $defaults,
     ) {
     }
 
@@ -19,8 +18,16 @@ class ActionRouteDto
         return $this->name;
     }
 
-    public function getRoute(): Route
+    public function getPath(): string
     {
-        return $this->route;
+        return $this->path;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDefaults(): array
+    {
+        return $this->defaults;
     }
 }

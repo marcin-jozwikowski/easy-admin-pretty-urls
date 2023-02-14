@@ -7,6 +7,7 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 use ExampleClassWithNoNamespace;
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RouteAlreadyExists;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassFinder;
@@ -20,6 +21,7 @@ use Symfony\Component\Routing\RouteCollection;
 /**
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader
  * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RouteAlreadyExists
  */
 class PrettyRoutesLoaderTest extends TestCase
 {
@@ -94,7 +96,8 @@ class PrettyRoutesLoaderTest extends TestCase
                 [
                     new ActionRouteDto(
                         name: $routeName,
-                        route: new Route(path: 'path/to/'.$routeName),
+                        path: 'path/to/'.$routeName,
+                        defaults: [],
                     ),
                 ],
             );
@@ -112,7 +115,6 @@ class PrettyRoutesLoaderTest extends TestCase
     public function testLoadNoValidClasses(): void
     {
         $resource = md5(random_bytes(random_int(6, 8)));
-        $routeName = md5(random_bytes(random_int(6, 8)));
         $this->classFinder->expects(self::once())
             ->method('getClassNames')
             ->with($resource)
@@ -128,5 +130,73 @@ class PrettyRoutesLoaderTest extends TestCase
 
         self::assertInstanceOf(RouteCollection::class, $loadedRoutes);
         self::assertCount(0, $loadedRoutes);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testLoadDuplicate(): void
+    {
+        self::expectException(RouteAlreadyExists::class);
+
+        $resource = md5(random_bytes(random_int(6, 8)));
+        $routeName = md5(random_bytes(random_int(6, 8)));
+        $this->classFinder->expects(self::once())
+            ->method('getClassNames')
+            ->with($resource)
+            ->willReturn([
+                ExampleClass::class,
+            ]);
+        $this->classAnalyzer->expects(self::once())
+            ->method('getRouteDtosForReflectionClass')
+            ->withAnyParameters()
+            ->willReturn(
+                [
+                    new ActionRouteDto(
+                        name: $routeName,
+                        path: 'path/to/'.$routeName,
+                        defaults: [],
+                    ),
+                    new ActionRouteDto(
+                        name: $routeName,
+                        path: 'path/to/'.$routeName,
+                        defaults: [],
+                    ),
+                ],
+            );
+
+        $this->testedClass->load($resource);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testLoadDuplicateDifferentClasses(): void
+    {
+        self::expectException(RouteAlreadyExists::class);
+
+        $resource = md5(random_bytes(random_int(6, 8)));
+        $routeName = md5(random_bytes(random_int(6, 8)));
+        $this->classFinder->expects(self::once())
+            ->method('getClassNames')
+            ->with($resource)
+            ->willReturn([
+                ExampleClass::class,
+                ExampleClass::class,
+            ]);
+        $this->classAnalyzer->expects(self::atMost(2))
+            ->method('getRouteDtosForReflectionClass')
+            ->withAnyParameters()
+            ->willReturn(
+                [
+                    new ActionRouteDto(
+                        name: $routeName,
+                        path: 'path/to/'.$routeName,
+                        defaults: [],
+                    ),
+                ],
+            );
+
+        $loadedRoutes = $this->testedClass->load($resource);
     }
 }

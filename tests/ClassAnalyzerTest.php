@@ -131,11 +131,11 @@ class ClassAnalyzerTest extends TestCase
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals($this->randomPrefix.'_specific_someaction', $routes[0]->getName());
-        self::assertArrayHasKey('_controller', $routes[0]->getRoute()->getDefaults());
-        self::assertEquals(self::DEFAULT_DASHBOARD, $routes[0]->getRoute()->getDefaults()['_controller']);
-        self::assertArrayHasKey('crudControllerFqcn', $routes[0]->getRoute()->getDefaults());
-        self::assertArrayHasKey('crudAction', $routes[0]->getRoute()->getDefaults());
-        self::assertArrayHasKey('menuPath', $routes[0]->getRoute()->getDefaults());
+        self::assertArrayHasKey('_controller', $routes[0]->getDefaults());
+        self::assertEquals(self::DEFAULT_DASHBOARD, $routes[0]->getDefaults()['_controller']);
+        self::assertArrayHasKey('crudControllerFqcn', $routes[0]->getDefaults());
+        self::assertArrayHasKey('crudAction', $routes[0]->getDefaults());
+        self::assertArrayHasKey('menuPath', $routes[0]->getDefaults());
     }
 
     /*
