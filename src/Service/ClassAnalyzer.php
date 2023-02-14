@@ -14,7 +14,6 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
-use Symfony\Component\Routing\Route;
 
 class ClassAnalyzer
 {
@@ -107,14 +106,11 @@ class ClassAnalyzer
         }
 
         $simpleName = $this->routeNamingGenerator->generateSimplifiedClassName($reflection->getName());
-        $oneRoute = new Route(
-            path: sprintf($routePathFormat, $simpleName, $action),
-        ); // @todo Utilize PrettyAttribute in both path parts
-        $oneRoute->setDefaults($routeDefaults);
 
         return new ActionRouteDto(
             name: $this->routeNamingGenerator->generateRouteName($simpleName, $action),
-            route: $oneRoute,
+            path: sprintf($routePathFormat, $simpleName, $action),
+            defaults: $routeDefaults,
         );
     }
 }

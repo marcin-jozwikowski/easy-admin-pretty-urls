@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Routing;
 
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\DashboardControllerInterface;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Exception\RouteAlreadyExists;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassFinder;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class PrettyRoutesLoader extends Loader
@@ -22,13 +24,22 @@ class PrettyRoutesLoader extends Loader
         parent::__construct($env);
     }
 
+    /**
+     * @throws RouteAlreadyExists
+     */
     public function load($resource, string $type = null): RouteCollection
     {
         $routes = new RouteCollection();
 
         $classes = $this->classFinder->getClassNames($resource);
         foreach ($classes as $singleClass) {
-            $routes->addCollection($this->getRoutesForClass($singleClass));
+            $classRoutes = $this->getRoutesForClass($singleClass);
+            foreach ($classRoutes as $singleRouteName => $singleRoute) {
+                if ($routes->get($singleRouteName)) {
+                    throw new RouteAlreadyExists($singleRouteName);
+                }
+            }
+            $routes->addCollection($classRoutes);
         }
 
         return $routes;
@@ -39,6 +50,9 @@ class PrettyRoutesLoader extends Loader
         return 'pretty_routes' === $type;
     }
 
+    /**
+     * @throws RouteAlreadyExists
+     */
     private function getRoutesForClass(string $singleClass): RouteCollection
     {
         $routes = new RouteCollection();
@@ -55,8 +69,16 @@ class PrettyRoutesLoader extends Loader
 
         $routeDtos = $this->classAnalyzer->getRouteDtosForReflectionClass($reflection);
         foreach ($routeDtos as $routeDto) {
-            // @todo Check if the route has not been added before
-            $routes->add($routeDto->getName(), $routeDto->getRoute());
+            if ($routes->get($routeDto->getName())) {
+                throw new RouteAlreadyExists($routeDto->getName());
+            }
+            $routes->add(
+                name: $routeDto->getName(),
+                route: new Route(
+                    path: $routeDto->getPath(),
+                    defaults: $routeDto->getDefaults(),
+                ),
+            );
         }
 
         return $routes;
