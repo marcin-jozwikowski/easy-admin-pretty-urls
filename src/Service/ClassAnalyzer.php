@@ -106,15 +106,17 @@ class ClassAnalyzer
         }
 
         $simpleName = $this->routeNamingGenerator->generateSimplifiedClassName($reflection->getName());
+        $classAttribute = $this->getControllerAttribute($reflection);
+        $classPath = $classAttribute?->getArguments()[PrettyRoutesController::ARGUMENT_PATH] ?? $simpleName;
 
         return new ActionRouteDto(
             name: $this->routeNamingGenerator->generateRouteName($simpleName, $action),
-            path: sprintf($routePathFormat, $simpleName, $actionPath),
+            path: sprintf($routePathFormat, $classPath, $actionPath),
             defaults: $routeDefaults,
         );
     }
 
-    private function getActionAttribute(ReflectionClass $reflection, string $action): ReflectionAttribute|bool|null
+    private function getActionAttribute(ReflectionClass $reflection, string $action): ?ReflectionAttribute
     {
         $reflectionMethod = $reflection->getMethod($action);
         $actionAttributes = $reflectionMethod->getAttributes(PrettyRoutesAction::class);
@@ -122,6 +124,11 @@ class ClassAnalyzer
             throw new RepeatedActionAttributeException($reflection->getName(), $action);
         }
 
-        return reset($actionAttributes);
+        $singleAttribute = reset($actionAttributes);
+        if ($singleAttribute instanceof ReflectionAttribute) {
+            return $singleAttribute;
+        }
+
+        return null;
     }
 }
