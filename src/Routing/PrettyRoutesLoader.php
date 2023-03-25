@@ -14,6 +14,10 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
+/*
+ * This class creates the routes based on controllers defined in the app.
+ * It iterates over all classes in a directory provided in routes.yml
+ */
 class PrettyRoutesLoader extends Loader
 {
     public function __construct(
@@ -31,15 +35,15 @@ class PrettyRoutesLoader extends Loader
     {
         $routes = new RouteCollection();
 
-        $classes = $this->classFinder->getClassNames($resource);
+        $classes = $this->classFinder->getClassNames($resource); // resource is a path to controllers dir - get all classes in there
         foreach ($classes as $singleClass) {
-            $classRoutes = $this->getRoutesForClass($singleClass);
+            $classRoutes = $this->getRoutesForClass($singleClass); // get all routes for each of those classes
             foreach ($classRoutes as $singleRouteName => $singleRoute) {
-                if ($routes->get($singleRouteName)) {
+                if ($routes->get($singleRouteName)) { // check created routes against existing ones for any duplicates
                     throw new RouteAlreadyExists($singleRouteName);
                 }
             }
-            $routes->addCollection($classRoutes);
+            $routes->addCollection($classRoutes); // add new classes to the pool
         }
 
         return $routes;
@@ -64,14 +68,19 @@ class PrettyRoutesLoader extends Loader
         }
 
         if ($reflection->implementsInterface(DashboardControllerInterface::class)) {
+            // this is the main controller - cannot map that one
             return $routes;
         }
 
+        // get all routeDTOs based on Attributes in the controller class and/or default behaviors
         $routeDtos = $this->classAnalyzer->getRouteDtosForReflectionClass($reflection);
         foreach ($routeDtos as $routeDto) {
             if ($routes->get($routeDto->getName())) {
+                // check for any duplicates
                 throw new RouteAlreadyExists($routeDto->getName());
             }
+
+            // generate actual Symfony routes from the DTOs
             $routes->add(
                 name: $routeDto->getName(),
                 route: new Route(

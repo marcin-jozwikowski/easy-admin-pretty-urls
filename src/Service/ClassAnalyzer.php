@@ -15,6 +15,9 @@ use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 
+/*
+ * This class analyzes reflections of controller classes and extracts route information in form of routeDTOs
+ */
 class ClassAnalyzer
 {
     public function __construct(
@@ -54,28 +57,29 @@ class ClassAnalyzer
             Action::DELETE,
         ];
 
-        $attribute = $this->getControllerAttribute($reflection);
+        $attribute = $this->getControllerAttribute($reflection); // get the PrettyRoutesController attribute values
         if ($attribute === null) {
-            return $defaultActions;
+            return $defaultActions; // if none defined - return default actions
         }
 
-        return $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? $defaultActions;
+        return $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? $defaultActions; // return defined actions or defaults
     }
 
     private function getRouteForAction(ReflectionClass $reflection, string $action): ?ActionRouteDto
     {
         try {
-            $reflectionMethod = $reflection->getMethod($action);
+            $actionAttribute = $this->getActionAttribute($reflection, $action);
         } catch (ReflectionException) {
             return null;
         }
 
-        $actionAttribute = $reflectionMethod->getAttributes(PrettyRoutesAction::class);
-        if (count($actionAttribute) > 1) {
-            throw new RepeatedActionAttributeException($reflection->getName(), $action);
+        $actionPath = $action;
+        if ($actionAttribute instanceof ReflectionAttribute) {
+            // second part of the final URL is the action name or the value in PrettyRoutesAction attribute
+            $actionPath = $actionAttribute->getArguments()[PrettyRoutesAction::ARGUMENT_PATH] ?? $action;
         }
 
-        return $this->makeRouteDto($reflection, $action);
+        return $this->makeRouteDto(reflection: $reflection, action: $action, actionPath: $actionPath);
     }
 
     private function getControllerAttribute(ReflectionClass $reflection): ?ReflectionAttribute
@@ -91,26 +95,47 @@ class ClassAnalyzer
         return reset($controllerAttributes);
     }
 
-    private function makeRouteDto(ReflectionClass $reflection, string $action): ActionRouteDto
+    private function makeRouteDto(ReflectionClass $reflection, string $action, string $actionPath): ActionRouteDto
     {
         $routePathFormat = '/%s/%s';
         $routeDefaults = [
+            // set route values
             '_controller' => $this->prettyUrlsDefaultDashboard,
             PrettyUrlsGenerator::EA_FQCN => $reflection->getName(),
             PrettyUrlsGenerator::EA_ACTION => $action,
         ];
 
         if ($this->prettyUrlsIncludeMenuIndex) {
+            // add menu properties when required
             $routePathFormat .= '/{menuPath}';
             $routeDefaults[PrettyUrlsGenerator::MENU_PATH] = '-1,-1';
         }
 
         $simpleName = $this->routeNamingGenerator->generateSimplifiedClassName($reflection->getName());
+        // determine the first part of the final URL - classname or the value from PrettyRoutesController attribute
+        $classAttribute = $this->getControllerAttribute($reflection);
+        $classPath = $classAttribute?->getArguments()[PrettyRoutesController::ARGUMENT_PATH] ?? $simpleName;
 
         return new ActionRouteDto(
             name: $this->routeNamingGenerator->generateRouteName($simpleName, $action),
-            path: sprintf($routePathFormat, $simpleName, $action),
+            path: sprintf($routePathFormat, $classPath, $actionPath),
             defaults: $routeDefaults,
         );
+    }
+
+    private function getActionAttribute(ReflectionClass $reflection, string $action): ?ReflectionAttribute
+    {
+        $reflectionMethod = $reflection->getMethod($action); // just assume the required action exists
+        $actionAttributes = $reflectionMethod->getAttributes(PrettyRoutesAction::class);
+        if (count($actionAttributes) > 1) {
+            throw new RepeatedActionAttributeException($reflection->getName(), $action);
+        }
+
+        $singleAttribute = reset($actionAttributes); // there should be only one attribute
+        if ($singleAttribute instanceof ReflectionAttribute) {
+            return $singleAttribute;
+        }
+
+        return null;
     }
 }

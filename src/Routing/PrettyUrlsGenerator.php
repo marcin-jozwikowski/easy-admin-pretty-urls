@@ -11,6 +11,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 
+/*
+ * This class utilizes the routes created in Loader class instead of just creating URL with all data in query
+ */
 class PrettyUrlsGenerator implements UrlGeneratorInterface
 {
     public const EA_FQCN = 'crudControllerFqcn';
@@ -39,19 +42,22 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
 
     public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
+        // at first check if all necessary params are provided
         if (isset($parameters[static::EA_FQCN]) && isset($parameters[static::EA_ACTION])) {
-            $prettyName = $this->generateNameFromParameters($parameters);
-            $prettyParams = $parameters;
+            $prettyName = $this->generateNameFromParameters($parameters); // get name of the route to use
+            $prettyParams = $parameters; // copy all parameters and remove those that are defined in the route
             unset($prettyParams[static::EA_FQCN]);
             unset($prettyParams[static::EA_ACTION]);
 
             if ($this->prettyUrlsIncludeMenuIndex && $menuIndex = $this->generateMenuIndexPart($parameters)) {
+                // when the route can contain menu information - remove that from the parameters
                 unset($prettyParams[static::EA_MENU_INDEX]);
                 unset($prettyParams[static::EA_SUBMENU_INDEX]);
                 $prettyParams[self::MENU_PATH] = $menuIndex;
             }
 
             try {
+                // generate the url using the route and any remaining parameters
                 return $this->router->generate($prettyName, $prettyParams, $referenceType);
             } catch (RouteNotFoundException $e) {
                 $this->logger->debug('Pretty route not found', [
@@ -62,13 +68,16 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             }
         }
 
+        // fallback to default behavior for all other URLs
         return $this->router->generate($name, $parameters, $referenceType);
     }
 
     private function generateNameFromParameters(array $parameters): string
     {
+        // get only the classname itself
         $className = $this->routeNamingGenerator->generateSimplifiedClassName($parameters[static::EA_FQCN]);
 
+        // route name consists of classname and action
         return $this->routeNamingGenerator->generateRouteName($className, $parameters[static::EA_ACTION]);
     }
 
