@@ -33,12 +33,14 @@ class PrettyUrlsRouterSubscriber implements EventSubscriberInterface
 
         foreach (self::REQUEST_ATTRIBUTES_TO_QUERY as $attributeName) {
             if ($request->attributes->has($attributeName)) {
+                // move values defined in route back to query parameters for EA to read
                 $request->query->set($attributeName, $request->attributes->get($attributeName));
                 $request->attributes->remove($attributeName);
             }
         }
 
         if ($request->attributes->has(PrettyUrlsGenerator::MENU_PATH)) {
+            // if the route has menu values in it - move that too
             [$menuIndex, $submenuIndex] = explode(',', $request->attributes->get(PrettyUrlsGenerator::MENU_PATH));
             $request->query->set(PrettyUrlsGenerator::EA_MENU_INDEX, $menuIndex);
             $request->query->set(PrettyUrlsGenerator::EA_SUBMENU_INDEX, $submenuIndex);

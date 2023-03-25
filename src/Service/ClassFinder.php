@@ -7,6 +7,9 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Service;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
+/*
+ * This class analyzes the files in a provided directory to get all FQCNs for them
+ */
 class ClassFinder
 {
     public function __construct(
@@ -22,6 +25,7 @@ class ClassFinder
         $finder->files()->in($this->projectDir.DIRECTORY_SEPARATOR.$directory)->name('*.php');
 
         foreach ($finder as $file) {
+            // iterate over all files and get their FQCNs
             $className = $this->getClassNameFromFile($file);
             if (!$className) {
                 continue;
@@ -39,6 +43,7 @@ class ClassFinder
             $className = $matches[1];
             $namespace = $this->getNamespaceFromContent($contents);
             if ($namespace) {
+                // create FQCNs when applicable
                 $className = "$namespace\\$className";
             }
 
@@ -51,6 +56,7 @@ class ClassFinder
     private function getNamespaceFromContent(string $contents): ?string
     {
         if (preg_match('/^\s*namespace\s+(.+?);/mi', $contents, $matches)) {
+            // the namespace is actually defined for that file
             $namespace = $matches[1];
 
             return trim($namespace);

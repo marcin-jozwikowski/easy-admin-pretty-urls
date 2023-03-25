@@ -5,6 +5,7 @@
 ---
 
 ## Instalation 
+
 1. Install the bundle by running
    ```shell
    composer require marcin-jozwikowski/easy-admin-pretty-urls
@@ -22,7 +23,7 @@
     resource: 'src/Controller'
     type: 'pretty_routes'
    ```
-   The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. 
+   The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See _Fine-tuning_ / _Define routes manually_ section to learn how this step can be ommitted.
 
 ## Configuration
 
@@ -47,6 +48,25 @@ The following parameters are in use:
   ```
 
 ## Fine-tuning
+
+* ### Define custom URL
+
+  By default, the URL is created as `<class_name>/<action_name>`.
+
+  To change that behavior specify `path` value in `PrettyRoutesController` attribute for the whole controller, and/or
+  in `PrettyRoutesAction` attribute for the specific action.
+
+  The following configuration will result in the action URL of `special/list` instead of the default `any_fancy/index`.
+  ```php
+  #[PrettyRoutesController(path: 'special')]
+  class AnyFancyController {
+  
+    #[PrettyRoutesAction(path: 'list')]
+    public function index() {
+      // .... 
+    }
+  }
+  ```
 
 * ### Select actions to create routes for
 
@@ -73,14 +93,15 @@ The following parameters are in use:
   * `defaults` `crudControllerFqcn` and `crudAction` must point to your target CRUD controller and its action.
   * `path` can be anything of your choosing
   * Route name must match the pattern `<prefix>_<name>_<action>` with `<action>` equal to `crudAction` and `<name>` being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_. `<prefix>` is set to `pretty` by default. See Configuration to ways to change it.
+  * When routes are defined manually the _Installation step 3_ is not reuired.
 
 ## Troubleshooting
 
 * ### Routes not working
 
-  If your routes are still not generated despite being added, look into your logs for `'Pretty route not found'` with `debug` level. Those will list all the EasyAdmin routes that did not have their pretty counterparts.
+  If your routes are still not generated despite being added, check your logs for `'Pretty route not found'` with `debug` level. Those will list all the EasyAdmin routes that did not have their pretty counterparts.
 
-  Most probably there's some naming missmatch.
+  Most probably, there's some naming missmatch.
 
 * ### Checking the Resource parsing results
 
