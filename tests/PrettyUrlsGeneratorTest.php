@@ -111,7 +111,7 @@ class PrettyUrlsGeneratorTest extends TestCase
 
         $this->router->expects(at(0))
             ->method('generate')
-            ->with('pretty_some_entity_index', [], UrlGeneratorInterface::ABSOLUTE_PATH)
+            ->with('pretty_some_entity_crud_index', [], UrlGeneratorInterface::ABSOLUTE_PATH)
             ->willThrowException(new RouteNotFoundException());
 
         $this->router->expects(at(1))
@@ -122,7 +122,7 @@ class PrettyUrlsGeneratorTest extends TestCase
         $this->logger->expects(self::once())
             ->method('debug')
             ->with('Pretty route not found', [
-                'route_name' => 'pretty_some_entity_index',
+                'route_name' => 'pretty_some_entity_crud_index',
                 'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                 'crudAction' => 'index',
             ]);
@@ -179,7 +179,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'expectedName' => 'pretty_some_entity_index',
+                'expectedName' => 'pretty_some_entity_crud_index',
                 'expectedParams' => [],
                 'includeMenuIndex' => false,
             ],
@@ -190,7 +190,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'expectedName' => 'pretty_some_entity_index',
+                'expectedName' => 'pretty_some_entity_crud_index',
                 'expectedParams' => [
                     'pageNumber' => 12,
                 ],
@@ -202,7 +202,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'expectedName' => 'other_prefix_some_entity_index',
+                'expectedName' => 'other_prefix_some_entity_crud_index',
                 'expectedParams' => [],
                 'includeMenuIndex' => false,
             ],
@@ -213,7 +213,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
                     'crudAction' => 'index',
                 ],
-                'expectedName' => 'other_prefix_some_entity_index',
+                'expectedName' => 'other_prefix_some_entity_crud_index',
                 'expectedParams' => [
                     'pageNumber' => 12,
                 ],
@@ -227,7 +227,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'menuIndex' => 1,
                     'submenuIndex' => 2,
                 ],
-                'expectedName' => 'pretty_some_entity_index',
+                'expectedName' => 'pretty_some_entity_crud_index',
                 'expectedParams' => [
                     'menuIndex' => 1,
                     'submenuIndex' => 2,
@@ -242,7 +242,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'menuIndex' => 1,
                     'submenuIndex' => 2,
                 ],
-                'expectedName' => 'pretty_some_entity_index',
+                'expectedName' => 'pretty_some_entity_crud_index',
                 'expectedParams' => [
                     'menuPath' => '1,2',
                 ],

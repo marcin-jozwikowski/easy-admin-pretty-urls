@@ -88,15 +88,15 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(5, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals($this->randomPrefix.'_specific_index', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_index', $routes[0]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
-        self::assertEquals($this->randomPrefix.'_specific_new', $routes[1]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_new', $routes[1]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[2]);
-        self::assertEquals($this->randomPrefix.'_specific_detail', $routes[2]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_detail', $routes[2]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[3]);
-        self::assertEquals($this->randomPrefix.'_specific_edit', $routes[3]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_edit', $routes[3]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[4]);
-        self::assertEquals($this->randomPrefix.'_specific_delete', $routes[4]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_delete', $routes[4]->getName());
     }
 
     /*
@@ -113,7 +113,7 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals($this->randomPrefix.'_specific_some_action', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_some_action', $routes[0]->getName());
     }
 
     /*
@@ -136,7 +136,7 @@ class ClassAnalyzerTest extends TestCase
 
         self::assertCount(1, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals($this->randomPrefix.'_specific_some_action', $routes[0]->getName());
+        self::assertEquals($this->randomPrefix.'_specific_crud_some_action', $routes[0]->getName());
         self::assertArrayHasKey('_controller', $routes[0]->getDefaults());
         self::assertEquals(self::DEFAULT_DASHBOARD, $routes[0]->getDefaults()['_controller']);
         self::assertArrayHasKey('crudControllerFqcn', $routes[0]->getDefaults());
@@ -192,15 +192,15 @@ class ClassAnalyzerTest extends TestCase
         $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
         self::assertCount(5, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
-        self::assertEquals('/specific/newPath', $routes[0]->getPath());
+        self::assertEquals('/specific_crud/newPath', $routes[0]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
-        self::assertEquals('/specific/newPath', $routes[1]->getPath());
+        self::assertEquals('/specific_crud/newPath', $routes[1]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[2]);
-        self::assertEquals('/specific/newPath', $routes[2]->getPath());
+        self::assertEquals('/specific_crud/newPath', $routes[2]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[3]);
-        self::assertEquals('/specific/newPath', $routes[3]->getPath());
+        self::assertEquals('/specific_crud/newPath', $routes[3]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[4]);
-        self::assertEquals('/specific/newPath', $routes[4]->getPath());
+        self::assertEquals('/specific_crud/newPath', $routes[4]->getPath());
     }
 
     public function testClassAttributePath(): void

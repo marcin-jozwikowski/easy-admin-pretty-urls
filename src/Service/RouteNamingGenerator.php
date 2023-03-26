@@ -18,7 +18,7 @@ class RouteNamingGenerator
     {
         $classNameA = explode('\\', $fqcn);
         $className = end($classNameA);
-        $className = str_replace(['Controller', 'Crud'], ['', ''], $className);
+        $className = str_replace('Controller', '', $className);
 
         return $this->toSnakeCase($className);
     }
