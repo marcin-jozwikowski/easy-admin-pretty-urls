@@ -20,20 +20,25 @@ class FakeRequestStack extends RequestStack
 
     public function getCurrentRequest(): ?Request
     {
-        $result = clone $this->requestStack->getCurrentRequest();
-        if ($result->get(EA::CONTEXT_REQUEST_ATTRIBUTE)) {
-            /** @var AdminContext $contextRequest */
-            $contextRequest = $result->get(EA::CONTEXT_REQUEST_ATTRIBUTE);
-            $query = clone $contextRequest->getRequest()->query;
+        if ($this->requestStack->getCurrentRequest()->get(EA::CONTEXT_REQUEST_ATTRIBUTE)) {
+            $result = clone $this->requestStack->getCurrentRequest();
+            $result->attributes = clone $result->attributes;
+            /** @var AdminContext $adminContext */
+            $adminContext = $result->get(EA::CONTEXT_REQUEST_ATTRIBUTE);
+            $contextRequest = clone $adminContext->getRequest();
+
+            $query = clone $contextRequest->query;
             $query->remove(PrettyUrlsGenerator::EA_FQCN);
             $query->remove(PrettyUrlsGenerator::EA_ACTION);
             if ($this->prettyUrlsIncludeMenuIndex) {
                 $query->remove(PrettyUrlsGenerator::EA_MENU_INDEX);
                 $query->remove(PrettyUrlsGenerator::EA_SUBMENU_INDEX);
             }
-            $contextRequest->getRequest()->query = $query;
+            $contextRequest->query = $query;
+
+            return $result;
         }
 
-        return $result;
+        return null;
     }
 }

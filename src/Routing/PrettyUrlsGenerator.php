@@ -40,21 +40,28 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
         return $this->router->getContext();
     }
 
+    public function cleanUpParametersArray(array $parameters): array
+    {
+        $prettyParams = $parameters;
+        unset($prettyParams[static::EA_FQCN]);
+        unset($prettyParams[static::EA_ACTION]);
+
+        if ($this->prettyUrlsIncludeMenuIndex && $menuIndex = $this->generateMenuIndexPart($parameters)) {
+            // when the route can contain menu information - remove that from the parameters
+            unset($prettyParams[static::EA_MENU_INDEX]);
+            unset($prettyParams[static::EA_SUBMENU_INDEX]);
+            $prettyParams[self::MENU_PATH] = $menuIndex;
+        }
+
+        return $prettyParams;
+    }
+
     public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
         // at first check if all necessary params are provided
         if (isset($parameters[static::EA_FQCN]) && isset($parameters[static::EA_ACTION])) {
             $prettyName = $this->generateNameFromParameters($parameters); // get name of the route to use
-            $prettyParams = $parameters; // copy all parameters and remove those that are defined in the route
-            unset($prettyParams[static::EA_FQCN]);
-            unset($prettyParams[static::EA_ACTION]);
-
-            if ($this->prettyUrlsIncludeMenuIndex && $menuIndex = $this->generateMenuIndexPart($parameters)) {
-                // when the route can contain menu information - remove that from the parameters
-                unset($prettyParams[static::EA_MENU_INDEX]);
-                unset($prettyParams[static::EA_SUBMENU_INDEX]);
-                $prettyParams[self::MENU_PATH] = $menuIndex;
-            }
+            $prettyParams = $this->cleanUpParametersArray($parameters); // copy all parameters and remove those that are defined in the route
 
             try {
                 // generate the url using the route and any remaining parameters
