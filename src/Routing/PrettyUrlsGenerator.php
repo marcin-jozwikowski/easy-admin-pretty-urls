@@ -14,6 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
 /*
  * This class utilizes the routes created in Loader class instead of just creating URL with all data in query
  */
+
 class PrettyUrlsGenerator implements UrlGeneratorInterface
 {
     public const EA_FQCN = 'crudControllerFqcn';
@@ -21,6 +22,7 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public const EA_MENU_INDEX = 'menuIndex';
     public const EA_SUBMENU_INDEX = 'submenuIndex';
     public const MENU_PATH = 'menuPath';
+    public const EA_REFERRER = 'referrer';
 
     public function __construct(
         private RouterInterface $router,
@@ -53,13 +55,17 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             $prettyParams[self::MENU_PATH] = $menuIndex;
         }
 
+        if (isset($prettyParams[static::EA_REFERRER])) {
+            $prettyParams[static::EA_REFERRER] = $this->sanitizeUrl($prettyParams[static::EA_REFERRER]);
+        }
+
         return $prettyParams;
     }
 
     public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
         // at first check if all necessary params are provided
-        if (isset($parameters[static::EA_FQCN]) && isset($parameters[static::EA_ACTION])) {
+        if ($this->areParametersValid($parameters)) {
             $prettyName = $this->generateNameFromParameters($parameters); // get name of the route to use
             $prettyParams = $this->cleanUpParametersArray($parameters); // copy all parameters and remove those that are defined in the route
 
@@ -95,5 +101,26 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             $parameters[self::EA_MENU_INDEX] ?? -1,
             $parameters[self::EA_SUBMENU_INDEX] ?? -1,
         );
+    }
+
+    public function sanitizeUrl(string $value): string
+    {
+        $mainQueryReferrerUrlQuery = parse_url($value, PHP_URL_QUERY); // we're just interested in the query part of the URL
+        if (empty($mainQueryReferrerUrlQuery)) {
+            return $value;
+        }
+
+        $referrerParams = [];
+        parse_str(urldecode($mainQueryReferrerUrlQuery), $referrerParams); // decode the parameters to be usable
+        if ($this->areParametersValid($referrerParams)) {
+            return $this->generate('easyadmin', $referrerParams); // generate the pretty URL for given parameters. Name is just for fallback
+        }
+
+        return $value;
+    }
+
+    private function areParametersValid(array $parameters): bool
+    {
+        return isset($parameters[static::EA_FQCN]) && isset($parameters[static::EA_ACTION]);
     }
 }

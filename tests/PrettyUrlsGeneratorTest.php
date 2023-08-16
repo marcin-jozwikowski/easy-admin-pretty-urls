@@ -250,4 +250,101 @@ class PrettyUrlsGeneratorTest extends TestCase
             ],
         ];
     }
+
+    public function testGenerateWithReferrer(): void
+    {
+        $expectedResult = base64_encode(random_bytes(16));
+        $params = [
+            'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+            'crudAction' => 'index',
+            'referrer' => '/post_crud/index/2,-1?page=2&crudControllerFqcn=App%5CController%5CSomeEntityCrudController&crudAction=index&menuIndex=2&submenuIndex=-1',
+        ];
+
+        $this->router->expects(at(0))
+            ->method('generate')
+            ->with(
+                'pretty_some_entity_crud_index',
+                [
+                    'page' => '2',
+                    'menuIndex' => '2',
+                    'submenuIndex' => '-1',
+                ],
+                UrlGeneratorInterface::ABSOLUTE_PATH,
+            )
+            ->willReturn('/some/index/2,-1');
+
+        $secondCallParams = ['referrer' => '/some/index/2,-1'];
+        $this->router->expects(at(1))
+            ->method('generate')
+            ->with('pretty_some_entity_crud_index', $secondCallParams, UrlGeneratorInterface::ABSOLUTE_PATH)
+            ->willReturn($expectedResult);
+
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
+            prettyUrlsIncludeMenuIndex: false,
+        );
+
+        $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
+
+        self::assertEquals($expectedResult, $result);
+    }
+
+    public function testSanitizeUrl(): void
+    {
+        $randParamName = substr(sha1(random_bytes(8)), 1, 4);
+        $randParamValue = substr(sha1(random_bytes(7)), 1, 4);
+        $this->router->expects(at(0))
+            ->method('generate')
+            ->with(
+                'pretty_some_entity_crud_index',
+                [
+                    $randParamName => $randParamValue,
+                    'page' => '2',
+                    'menuIndex' => '2',
+                    'submenuIndex' => '-1',
+                ],
+                UrlGeneratorInterface::ABSOLUTE_PATH,
+            )
+            ->willReturn('/some/index/2,-1?'.$randParamName.'='.$randParamValue);
+
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
+            prettyUrlsIncludeMenuIndex: false,
+        );
+
+        $result = $this->testedClass->sanitizeUrl(
+            '/post_crud/index/2,-1?page=2&crudControllerFqcn=App%5CController%5CSomeEntityCrudController&crudAction=index&menuIndex=2&submenuIndex=-1&'.$randParamName.'='.$randParamValue,
+        );
+
+        self::assertEquals('/some/index/2,-1?'.$randParamName.'='.$randParamValue, $result);
+    }
+
+    /**
+     * @dataProvider sanitizeUrlFallbackData
+     */
+    public function testSanitizeUrlFallback(string $url, string $expectedResult): void
+    {
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
+            prettyUrlsIncludeMenuIndex: false,
+        );
+
+        $result = $this->testedClass->sanitizeUrl($url);
+
+        self::assertEquals($expectedResult, $result);
+    }
+
+    public function sanitizeUrlFallbackData(): array
+    {
+        return [
+            ['/example/url', '/example/url'],
+            ['/example/url?param=123', '/example/url?param=123'],
+        ];
+    }
 }

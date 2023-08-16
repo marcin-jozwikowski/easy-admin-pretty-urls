@@ -11,7 +11,7 @@ use Twig\TwigFilter;
 class PrettyUrlsExtension extends AbstractExtension
 {
     public function __construct(
-        protected PrettyUrlsGenerator $prettyUrlsGenerator
+        protected PrettyUrlsGenerator $prettyUrlsGenerator,
     ) {
     }
 
@@ -22,24 +22,26 @@ class PrettyUrlsExtension extends AbstractExtension
         ];
     }
 
-    public function prettyUrlsRemoveActions($value): string
+    public function prettyUrlsRemoveActions(string $value): string
     {
-        $mainUrl = parse_url($value); // split the main url into part
-        $mainQuery = [];
-        parse_str($mainUrl['query'], $mainQuery); // parse the query part into key-value array
-        $mainQueryReferrerUrl = parse_url($mainQuery['referrer']); // 'referrer' query param is a URL that need sanitation
-
-        $referrerParams = [];
-        parse_str(urldecode($mainQueryReferrerUrl['query']), $referrerParams);
-        $prettyReferrerParams = $this->prettyUrlsGenerator->cleanUpParametersArray($referrerParams);
-        unset($prettyReferrerParams[PrettyUrlsGenerator::MENU_PATH]);
-
-        $mainQueryReferrerUrl['query'] = http_build_query($prettyReferrerParams);
-        $finalReferrer = '';
-        if ($mainQueryReferrerUrl['query']) {
-            $finalReferrer .= '?'.$mainQueryReferrerUrl['query'];
+        $mainUrlQuery = parse_url($value, PHP_URL_QUERY); // split the main url into part
+        if (empty($mainUrlQuery)) {
+            return $value;
+        }
+        $mainQueryParams = [];
+        parse_str($mainUrlQuery, $mainQueryParams); // parse the query part into key-value array
+        if (empty($mainQueryParams[PrettyUrlsGenerator::EA_REFERRER])) {
+            return $value;
         }
 
-        return str_replace('?'.urlencode(http_build_query($referrerParams)), $finalReferrer, $value);
+        $matches = [];
+        preg_match('#referrer=([\d\w/,-?%]+)[&]?#', $value, $matches); // match the original referrer
+        if ($matches[1]) {
+            $finalReferrer = $this->prettyUrlsGenerator->sanitizeUrl($mainQueryParams[PrettyUrlsGenerator::EA_REFERRER]);
+
+            return str_replace($matches[1], $finalReferrer, $value); // replace the old referrer with the new one
+        }
+
+        return $value;
     }
 }
