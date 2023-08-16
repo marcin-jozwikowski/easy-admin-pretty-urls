@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MarcinJozwikowski\EasyAdminPrettyUrls\Service;
+namespace MarcinJozwikowski\EasyAdminPrettyUrls\Provider;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -10,7 +10,7 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class FakeRequestStack extends RequestStack
+class PrettyAdminContext extends RequestStack
 {
     public function __construct(
         private RequestStack $requestStack,

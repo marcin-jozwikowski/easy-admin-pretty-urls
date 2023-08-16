@@ -17,7 +17,7 @@ services:
   PrettyUrlFakedContext:
     class: \EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider
     arguments:
-      - '@MarcinJozwikowski\EasyAdminPrettyUrls\Service\FakeRequestStack'
+      - '@MarcinJozwikowski\EasyAdminPrettyUrls\Provider\PrettyAdminContext'
 
   EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator:
     arguments:
