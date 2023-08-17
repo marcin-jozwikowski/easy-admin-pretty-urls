@@ -14,9 +14,14 @@ services:
       - '../src/DependencyInjection/'
       - 'EasyAdminPrettyUrlsBundle.php'
 
+  PrettyUrlFakedContext:
+    class: \EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider
+    arguments:
+      - '@MarcinJozwikowski\EasyAdminPrettyUrls\Provider\PrettyAdminContext'
+
   EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator:
     arguments:
-      - '@EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider'
+      - '@PrettyUrlFakedContext'
       - '@MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\DashboardControllerRegistry'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\CrudControllerRegistry'

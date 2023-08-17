@@ -10,6 +10,7 @@
    ```shell
    composer require marcin-jozwikowski/easy-admin-pretty-urls
    ```
+   
 1. Enable the bundle by adding it to your `config/bundles.php`
    ```php
    [
@@ -17,6 +18,7 @@
     MarcinJozwikowski\EasyAdminPrettyUrls\EasyAdminPrettyUrlsBundle::class => ['all' => true],
    ]
    ```
+   
 1. Add a routes set pointing to a directory containing your Controllers
    ```yaml
    pretty_routes_name:
@@ -24,6 +26,16 @@
     type: 'pretty_routes'
    ```
    The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See _Fine-tuning_ / _Define routes manually_ section to learn how this step can be ommitted.
+
+1. Make your main DashboardController extend `\MarcinJozwikowski\EasyAdminPrettyUrls\Controller\PrettyDashboardController` or manually override the a default template like so:
+   ```php
+   public function configureCrud(): Crud
+    {
+        return parent::configureCrud()
+            ->overrideTemplate('crud/field/association', '@EasyAdminPrettyUrls/crud/field/association.html.twig');
+    }
+   ```
+
 
 ## Configuration
 
