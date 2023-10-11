@@ -1,0 +1,30 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block search_form %}
+    {% block search_form_filters %}
+        {{ parent() }}
+    {% endblock %}
+
+    {% if not pretty_urls_include_menu_index() %}
+        <input type="hidden" name="menuIndex" value="{{ ea.request.query.get('menuIndex') }}">
+        <input type="hidden" name="submenuIndex" value="{{ ea.request.query.get('submenuIndex') }}">
+    {% endif %}
+    <input type="hidden" name="page" value="1">
+
+    <div class="form-group">
+        <div class="form-widget">
+            <i class="fas fa-search content-search-icon"></i>
+
+            <label class="content-search-label" data-value="{{ app.request.get('query') }}">
+                <input class="form-control {{ app.request.get('query') is null ? 'is-blank' }}" type="search" name="query" value="{{ app.request.get('query') ?? '' }}" placeholder="{{ 'action.search'|trans(ea.i18n.translationParameters, 'EasyAdminBundle') }}" spellcheck="false" autocorrect="false" onInput="this.parentNode.dataset.value=this.value"{% if ea.crud.currentAction == 'index' and ea.crud.autofocusSearch == true %} autofocus="autofocus"{% endif %}>
+            </label>
+
+            {% if app.request.get('query') %}
+                <a href="{{ ea_url().unset('query') }}" class="content-search-reset">
+                    <i class="fas fa-fw fa-times"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

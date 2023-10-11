@@ -9,6 +9,7 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Twig\PrettyUrlsExtension;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 use function PHPUnit\Framework\assertEquals;
 
@@ -23,7 +24,7 @@ class PrettyUrlsExtensionTest extends TestCase
     public function setUp(): void
     {
         $this->generator = $this->createMock(PrettyUrlsGenerator::class);
-        $this->tested = new PrettyUrlsExtension($this->generator);
+        $this->tested = new PrettyUrlsExtension($this->generator, true);
     }
 
     public function testGetFilters(): void
@@ -36,6 +37,30 @@ class PrettyUrlsExtensionTest extends TestCase
         self::assertIsArray($result[0]->getCallable());
         self::assertEquals($this->tested, $result[0]->getCallable()[0]);
         self::assertEquals('prettyUrlsRemoveActions', $result[0]->getCallable()[1]);
+    }
+
+    public function testGetFunctions(): void
+    {
+        $result = $this->tested->getFunctions();
+        self::assertIsArray($result);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(TwigFunction::class, $result[0]);
+        self::assertEquals('pretty_urls_include_menu_index', $result[0]->getName());
+        self::assertIsArray($result[0]->getCallable());
+        self::assertEquals($this->tested, $result[0]->getCallable()[0]);
+        self::assertEquals('includeMenuIndex', $result[0]->getCallable()[1]);
+    }
+
+    public function testIncludeMenuIndexTrue(): void
+    {
+        $tested = new PrettyUrlsExtension($this->generator, true);
+        self::assertEquals(true, $tested->includeMenuIndex());
+    }
+
+    public function testIncludeMenuIndexFalse(): void
+    {
+        $tested = new PrettyUrlsExtension($this->generator, false);
+        self::assertEquals(false, $tested->includeMenuIndex());
     }
 
     /**
