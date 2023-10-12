@@ -24,6 +24,7 @@ class ConfigurationTest extends TestCase
             'default_dashboard' => base64_encode(random_bytes(random_int(8, 16))),
             'include_menu_index' => (random_int(0, 16) % 2 === 0),
             'route_prefix' => base64_encode(random_bytes(random_int(8, 16))),
+            'drop_entity_fqcn' => (random_int(0, 16) % 2 === 0),
         ];
 
         $configObject = new Configuration();

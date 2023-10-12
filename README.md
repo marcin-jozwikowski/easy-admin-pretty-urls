@@ -11,7 +11,7 @@
    composer require marcin-jozwikowski/easy-admin-pretty-urls
    ```
    
-1. Enable the bundle by adding it to your `config/bundles.php`
+1. Enable the bundle by adding it to your `config/bundles.php` if not enabled automatically
    ```php
    [
    ...
@@ -32,6 +32,7 @@
    public function configureCrud(): Crud
     {
         return parent::configureCrud()
+            ->overrideTemplate('layout', '@EasyAdminPrettyUrls/layout.html.twig')
             ->overrideTemplate('crud/field/association', '@EasyAdminPrettyUrls/crud/field/association.html.twig');
     }
    ```
@@ -41,11 +42,12 @@
 
 The following parameters are in use:
 
-  | Parameter | Defalt value                                             | Description                           | 
-  |----------------------------------------------------------|---------------------------------------| ----------- |
-  | `route_prefix` | `pretty`                                                 | First part of route name              |
-  | `default_dashboard` | `App\\Controller\\EasyAdmin\\DashboardController::index` | Controller action to invoke           |
-  | `include_menu_index` | `false`                                                  | Should menu index be included in path |
+  | Parameter            | Defalt value                                             | Description                                  | 
+  |----------------------|---------------------------------------|----------------------------------------------|
+  | `route_prefix`       | `pretty`                                                 | First part of route name                     |
+  | `default_dashboard`  | `App\\Controller\\EasyAdmin\\DashboardController::index` | Controller action to invoke                  |
+  | `include_menu_index` | `false`                                                  | Should menu index be included in path        |
+  | `drop_entity_fqcn`   | `false`                                                  | Should `entityFqcn` be removed from the URLs |
 
   To change the default values set the parameter in your `services.yaml`
   ```yaml

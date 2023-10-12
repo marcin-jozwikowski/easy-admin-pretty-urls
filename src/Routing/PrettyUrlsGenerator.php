@@ -21,6 +21,7 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public const EA_ACTION = 'crudAction';
     public const EA_MENU_INDEX = 'menuIndex';
     public const EA_SUBMENU_INDEX = 'submenuIndex';
+    public const EA_ENTITY_FQCN = 'entityFqcn';
     public const MENU_PATH = 'menuPath';
     public const EA_REFERRER = 'referrer';
 
@@ -29,6 +30,7 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
         private LoggerInterface $logger,
         private RouteNamingGenerator $routeNamingGenerator,
         private bool $prettyUrlsIncludeMenuIndex,
+        private bool $prettyUrlsDropEntityFqcn,
     ) {
     }
 
@@ -53,6 +55,10 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
             unset($prettyParams[static::EA_MENU_INDEX]);
             unset($prettyParams[static::EA_SUBMENU_INDEX]);
             $prettyParams[self::MENU_PATH] = $menuIndex;
+        }
+
+        if ($this->prettyUrlsDropEntityFqcn) {
+            unset($prettyParams[static::EA_ENTITY_FQCN]);
         }
 
         if (isset($prettyParams[static::EA_REFERRER])) {
