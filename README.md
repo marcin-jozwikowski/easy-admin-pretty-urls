@@ -2,6 +2,16 @@
 
 ### Symfony Bundle that introduces customizable routes to EasyAdmin
 
+## Example
+Turn
+```
+  http://ea-demo.loc/en/easyadmin?crudAction=index&crudControllerFqcn=App%5CController%5CEasyAdmin%5CPostCrudController
+```
+into
+```
+  http://ea-demo.loc/en/post_crud/index
+```
+
 ---
 
 ## Instalation 
@@ -26,6 +36,18 @@
     type: 'pretty_routes'
    ```
    The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See _Fine-tuning_ / _Define routes manually_ section to learn how this step can be ommitted.
+   
+   Other routing structures can be utilized as well, for example:
+   ```yaml
+    pretty_routes:
+      resource: 'src/Controller'
+      type: 'pretty_routes'
+      prefix: /{_locale}
+      requirements:
+        _locale: '%app_locales%'
+      defaults:
+        _locale: '%locale%'
+   ```
 
 1. Make your main DashboardController extend `\MarcinJozwikowski\EasyAdminPrettyUrls\Controller\PrettyDashboardController` or manually override the a default template like so:
    ```php
