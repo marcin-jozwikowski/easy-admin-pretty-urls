@@ -104,7 +104,10 @@ The following parameters are in use:
   * `controller` value must point to your projects DashboardController
   * `defaults` `crudControllerFqcn` and `crudAction` must point to your target CRUD controller and its action.
   * `path` can be anything of your choosing
-  * Route name must match the pattern `<prefix>_<name>_<action>` with `<action>` equal to `crudAction` and `<name>` being the target controller class name (not FQCN - just the last part) stripped of `Crud` and `Controller`, written in _snake_case_. `<prefix>` is set to `pretty` by default. See Configuration to ways to change it.
+  * Route name must match the pattern `<prefix>_<name>_<action>` with 
+    * `<action>` equal to `crudAction` value from the defaults
+    * `<name>` being the target controller class name (not FQCN - just the last part) stripped of `Controller`, written in _snake_case_
+    * `<prefix>` is set to `pretty` by default. See Configuration to ways to change it.
   * When routes are defined manually the _Installation step 3_ is not reuired.
 
 ## Troubleshooting
