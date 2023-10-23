@@ -2,6 +2,16 @@
 
 ### Symfony Bundle that introduces customizable routes to EasyAdmin
 
+## Example
+Turn
+```
+  http://ea-demo.loc/en/easyadmin?crudAction=index&crudControllerFqcn=App%5CController%5CEasyAdmin%5CPostCrudController
+```
+into
+```
+  http://ea-demo.loc/en/post_crud/index
+```
+
 ---
 
 ## Instalation 
@@ -11,7 +21,7 @@
    composer require marcin-jozwikowski/easy-admin-pretty-urls
    ```
    
-1. Enable the bundle by adding it to your `config/bundles.php`
+1. Enable the bundle by adding it to your `config/bundles.php` if not enabled automatically
    ```php
    [
    ...
@@ -26,12 +36,25 @@
     type: 'pretty_routes'
    ```
    The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See _Fine-tuning_ / _Define routes manually_ section to learn how this step can be ommitted.
+   
+   Other routing structures can be utilized as well, for example:
+   ```yaml
+    pretty_routes:
+      resource: 'src/Controller'
+      type: 'pretty_routes'
+      prefix: /{_locale}
+      requirements:
+        _locale: '%app_locales%'
+      defaults:
+        _locale: '%locale%'
+   ```
 
 1. Make your main DashboardController extend `\MarcinJozwikowski\EasyAdminPrettyUrls\Controller\PrettyDashboardController` or manually override the a default template like so:
    ```php
    public function configureCrud(): Crud
     {
         return parent::configureCrud()
+            ->overrideTemplate('layout', '@EasyAdminPrettyUrls/layout.html.twig')
             ->overrideTemplate('crud/field/association', '@EasyAdminPrettyUrls/crud/field/association.html.twig');
     }
    ```
@@ -41,11 +64,12 @@
 
 The following parameters are in use:
 
-  | Parameter | Defalt value                                             | Description                           | 
-  |----------------------------------------------------------|---------------------------------------| ----------- |
-  | `route_prefix` | `pretty`                                                 | First part of route name              |
-  | `default_dashboard` | `App\\Controller\\EasyAdmin\\DashboardController::index` | Controller action to invoke           |
-  | `include_menu_index` | `false`                                                  | Should menu index be included in path |
+  | Parameter            | Defalt value                                             | Description                                  | 
+  |----------------------|---------------------------------------|----------------------------------------------|
+  | `route_prefix`       | `pretty`                                                 | First part of route name                     |
+  | `default_dashboard`  | `App\\Controller\\EasyAdmin\\DashboardController::index` | Controller action to invoke                  |
+  | `include_menu_index` | `false`                                                  | Should menu index be included in path        |
+  | `drop_entity_fqcn`   | `false`                                                  | Should `entityFqcn` be removed from the URLs |
 
   To change the default values set the parameter in your `services.yaml`
   ```yaml

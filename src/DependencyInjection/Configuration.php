@@ -13,6 +13,7 @@ class Configuration implements ConfigurationInterface
     public const ROUTE_PREFIX_NODE = 'route_prefix';
     public const DEFAULT_DASHBOARD_NODE = 'default_dashboard';
     public const INCLUDE_MENU_INDEX_NODE = 'include_menu_index';
+    public const DROP_ENTITY_FQCN_NODE = 'drop_entity_fqcn';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -28,6 +29,9 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('App\\Controller\\EasyAdmin\\DashboardController::index')
                 ->end()
                 ->booleanNode(self::INCLUDE_MENU_INDEX_NODE)
+                    ->defaultFalse()
+                ->end()
+                ->booleanNode(self::DROP_ENTITY_FQCN_NODE)
                     ->defaultFalse()
                 ->end()
             ->end();

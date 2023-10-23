@@ -34,6 +34,11 @@ class EasyAdminPrettyUrlsExtension extends Extension
             $config[Configuration::INCLUDE_MENU_INDEX_NODE],
         );
 
+        $container->setParameter(
+            Configuration::ROOT_NODE.'.'.Configuration::DROP_ENTITY_FQCN_NODE,
+            $config[Configuration::DROP_ENTITY_FQCN_NODE],
+        );
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));
         $loader->load('services.yaml');
     }

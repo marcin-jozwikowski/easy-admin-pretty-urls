@@ -19,6 +19,7 @@ class PrettyDashboardControllerTest extends TestCase
         self::assertEquals(
             [
                 'crud/field/association' => '@EasyAdminPrettyUrls/crud/field/association.html.twig',
+                'layout' => '@EasyAdminPrettyUrls/layout.html.twig',
             ],
             $controller->configureCrud()->getAsDto()->getOverriddenTemplates(),
         );

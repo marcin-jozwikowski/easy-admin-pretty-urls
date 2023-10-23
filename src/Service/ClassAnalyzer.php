@@ -55,6 +55,7 @@ class ClassAnalyzer
             Action::DETAIL,
             Action::EDIT,
             Action::DELETE,
+            'renderFilters',
         ];
 
         $attribute = $this->getControllerAttribute($reflection); // get the PrettyRoutesController attribute values

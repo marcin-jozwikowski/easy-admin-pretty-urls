@@ -7,12 +7,21 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Twig;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class PrettyUrlsExtension extends AbstractExtension
 {
     public function __construct(
-        protected PrettyUrlsGenerator $prettyUrlsGenerator,
+        private PrettyUrlsGenerator $prettyUrlsGenerator,
+        private bool $prettyUrlsIncludeMenuIndex,
     ) {
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('pretty_urls_include_menu_index', [$this, 'includeMenuIndex']),
+        ];
     }
 
     public function getFilters(): array
@@ -43,5 +52,10 @@ class PrettyUrlsExtension extends AbstractExtension
         }
 
         return $value;
+    }
+
+    public function includeMenuIndex(): bool
+    {
+        return $this->prettyUrlsIncludeMenuIndex;
     }
 }

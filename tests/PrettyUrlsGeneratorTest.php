@@ -47,6 +47,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
 
         $this->testedClass->setContext($context);
@@ -63,6 +64,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
         $result = $this->testedClass->getContext();
 
@@ -77,7 +79,7 @@ class PrettyUrlsGeneratorTest extends TestCase
      *
      * @throws Exception
      */
-    public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams, bool $includeMenuIndex): void
+    public function testGenerate(string $prefix, array $params, string $expectedName, array $expectedParams, bool $includeMenuIndex, bool $dropEntityFqcn): void
     {
         $expectedResult = base64_encode(random_bytes(16));
         $this->logger->expects(self::never())
@@ -91,6 +93,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator($prefix),
             prettyUrlsIncludeMenuIndex: $includeMenuIndex,
+            prettyUrlsDropEntityFqcn: $dropEntityFqcn,
         );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
@@ -131,6 +134,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
@@ -150,6 +154,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                 'expectedName' => self::INITIAL_ROUTE_NAME,
                 'expectedParams' => [],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'onlyControllerNameProvided' => [
                 'prefix' => 'pretty',
@@ -161,6 +166,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudControllerFqcn' => 'App\\Controller\\SomeEntityController',
                 ],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'onlyActionProvided' => [
                 'prefix' => 'pretty',
@@ -172,6 +178,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'crudAction' => 'index',
                 ],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'controllerAndActionProvided' => [
                 'prefix' => 'pretty',
@@ -182,6 +189,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                 'expectedName' => 'pretty_some_entity_crud_index',
                 'expectedParams' => [],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'additionalParameterProvided' => [
                 'prefix' => 'pretty',
@@ -195,6 +203,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'pageNumber' => 12,
                 ],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'nonDefaultPrefix' => [
                 'prefix' => 'other_prefix',
@@ -205,6 +214,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                 'expectedName' => 'other_prefix_some_entity_crud_index',
                 'expectedParams' => [],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'nonDefaultPrefixWithAdditionalParam' => [
                 'prefix' => 'other_prefix',
@@ -218,6 +228,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'pageNumber' => 12,
                 ],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'menuIndexProvidedWhenDisabled' => [
                 'prefix' => 'pretty',
@@ -233,6 +244,7 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'submenuIndex' => 2,
                 ],
                 'includeMenuIndex' => false,
+                'dropEntityFqcn' => false,
             ],
             'menuIndexProvidedAndEnabled' => [
                 'prefix' => 'pretty',
@@ -247,6 +259,23 @@ class PrettyUrlsGeneratorTest extends TestCase
                     'menuPath' => '1,2',
                 ],
                 'includeMenuIndex' => true,
+                'dropEntityFqcn' => false,
+            ],
+            'dropEntityFqcnEnabled' => [
+                'prefix' => 'pretty',
+                'params' => [
+                    'crudControllerFqcn' => 'App\\Controller\\SomeEntityCrudController',
+                    'crudAction' => 'index',
+                    'menuIndex' => 1,
+                    'submenuIndex' => 2,
+                    'entityFqcn' => 'Some\\Entity\\Name',
+                ],
+                'expectedName' => 'pretty_some_entity_crud_index',
+                'expectedParams' => [
+                    'menuPath' => '1,2',
+                ],
+                'includeMenuIndex' => true,
+                'dropEntityFqcn' => true,
             ],
         ];
     }
@@ -284,6 +313,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
 
         $result = $this->testedClass->generate(self::INITIAL_ROUTE_NAME, $params);
@@ -314,10 +344,78 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
 
         $result = $this->testedClass->sanitizeUrl(
             '/post_crud/index/2,-1?page=2&crudControllerFqcn=App%5CController%5CSomeEntityCrudController&crudAction=index&menuIndex=2&submenuIndex=-1&'.$randParamName.'='.$randParamValue,
+        );
+
+        self::assertEquals('/some/index/2,-1?'.$randParamName.'='.$randParamValue, $result);
+    }
+
+    public function testSanitizeUrlWithDropFqcnEnabled(): void
+    {
+        $randParamName = substr(sha1(random_bytes(8)), 1, 4);
+        $randParamValue = substr(sha1(random_bytes(7)), 1, 4);
+        $this->router->expects(at(0))
+            ->method('generate')
+            ->with(
+                'pretty_some_entity_crud_index',
+                [
+                    $randParamName => $randParamValue,
+                    'page' => '2',
+                    'menuIndex' => '2',
+                    'submenuIndex' => '-1',
+                ],
+                UrlGeneratorInterface::ABSOLUTE_PATH,
+            )
+            ->willReturn('/some/index/2,-1?'.$randParamName.'='.$randParamValue);
+
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
+            prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: true,
+        );
+
+        $result = $this->testedClass->sanitizeUrl(
+            '/post_crud/index/2,-1?page=2&entityFqcn=SomeEntity&crudControllerFqcn=App%5CController%5CSomeEntityCrudController&crudAction=index&menuIndex=2&submenuIndex=-1&'.$randParamName.'='.$randParamValue,
+        );
+
+        self::assertEquals('/some/index/2,-1?'.$randParamName.'='.$randParamValue, $result);
+    }
+
+    public function testSanitizeUrlWithDropFqcnDisabled(): void
+    {
+        $randParamName = substr(sha1(random_bytes(8)), 1, 4);
+        $randParamValue = substr(sha1(random_bytes(7)), 1, 4);
+        $this->router->expects(at(0))
+            ->method('generate')
+            ->with(
+                'pretty_some_entity_crud_index',
+                [
+                    $randParamName => $randParamValue,
+                    'page' => '2',
+                    'menuIndex' => '2',
+                    'submenuIndex' => '-1',
+                    'entityFqcn' => 'SomeEntity',
+                ],
+                UrlGeneratorInterface::ABSOLUTE_PATH,
+            )
+            ->willReturn('/some/index/2,-1?'.$randParamName.'='.$randParamValue);
+
+        $this->testedClass = new PrettyUrlsGenerator(
+            router: $this->router,
+            logger: $this->logger,
+            routeNamingGenerator: new RouteNamingGenerator('pretty'),
+            prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
+        );
+
+        $result = $this->testedClass->sanitizeUrl(
+            '/post_crud/index/2,-1?page=2&entityFqcn=SomeEntity&crudControllerFqcn=App%5CController%5CSomeEntityCrudController&crudAction=index&menuIndex=2&submenuIndex=-1&'.$randParamName.'='.$randParamValue,
         );
 
         self::assertEquals('/some/index/2,-1?'.$randParamName.'='.$randParamValue, $result);
@@ -333,6 +431,7 @@ class PrettyUrlsGeneratorTest extends TestCase
             logger: $this->logger,
             routeNamingGenerator: new RouteNamingGenerator('pretty'),
             prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDropEntityFqcn: false,
         );
 
         $result = $this->testedClass->sanitizeUrl($url);

@@ -28,7 +28,7 @@ use ReflectionMethod;
  */
 class ClassAnalyzerTest extends TestCase
 {
-    public const DEFAULT_DASHBOARD = 'App//Dasboard::index';
+    private const DEFAULT_DASHBOARD = 'App//Dasboard::index';
 
     private MockObject|ReflectionAttribute $reflectionAttribute;
     private ReflectionMethod|MockObject $reflectionMethod;
@@ -86,7 +86,7 @@ class ClassAnalyzerTest extends TestCase
 
         $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
 
-        self::assertCount(5, $routes);
+        self::assertCount(6, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals($this->randomPrefix.'_specific_crud_index', $routes[0]->getName());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
@@ -190,7 +190,7 @@ class ClassAnalyzerTest extends TestCase
             ->willReturn([$this->reflectionActionAttribute]);
 
         $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
-        self::assertCount(5, $routes);
+        self::assertCount(6, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals('/specific_crud/newPath', $routes[0]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
@@ -216,7 +216,7 @@ class ClassAnalyzerTest extends TestCase
             ->willReturn([$this->reflectionAttribute]);
 
         $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
-        self::assertCount(5, $routes);
+        self::assertCount(6, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals('/differentPath/index', $routes[0]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);
@@ -247,7 +247,7 @@ class ClassAnalyzerTest extends TestCase
             ->willReturn([$this->reflectionActionAttribute]);
 
         $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
-        self::assertCount(5, $routes);
+        self::assertCount(6, $routes);
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals('/differentPath/newPath', $routes[0]->getPath());
         self::assertInstanceOf(ActionRouteDto::class, $routes[1]);

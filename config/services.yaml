@@ -6,6 +6,7 @@ services:
       $projectDir: '%kernel.project_dir%'
       $prettyUrlsRoutePrefix: '%easy_admin_pretty_urls.route_prefix%'
       $prettyUrlsIncludeMenuIndex: '%easy_admin_pretty_urls.include_menu_index%'
+      $prettyUrlsDropEntityFqcn: '%easy_admin_pretty_urls.drop_entity_fqcn%'
       $prettyUrlsDefaultDashboard: '%easy_admin_pretty_urls.default_dashboard%'
 
   MarcinJozwikowski\EasyAdminPrettyUrls\:
