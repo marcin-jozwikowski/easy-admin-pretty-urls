@@ -48,7 +48,7 @@ class DumpRoutesDefinitionsCommandTest extends TestCase
                 defaults: [
                     PrettyUrlsGenerator::EA_FQCN => $resource,
                     PrettyUrlsGenerator::EA_ACTION => $resource2,
-                    PrettyUrlsGenerator::MENU_PATH => $resource3
+                    PrettyUrlsGenerator::MENU_PATH => $resource3,
                 ],
             ),
         );

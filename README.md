@@ -83,6 +83,13 @@ The following parameters are in use:
       <parameter>: '<new_value>'
   ```
 
+## Twig
+
+There are one function, and one filter being registered by a Twig extension in this bundle:
+
+* `pretty_urls_include_menu_index()` Function returns the `include_menu_index` value from Configuration
+* `|pretty_urls_remove_actions` Filter removed the unnecessary query elements from the URL string 
+
 ## Fine-tuning
 
 * ### Define custom URL
