@@ -13,8 +13,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'debug:pretty-routes',
+    name: 'pretty-routes:debug',
     description: 'Dry-run generating pretty routes for EasyAdmin from provided resource',
+    aliases: ['debug:pretty-routes'],
 )]
 class DebugPrettyRoutesCommand extends Command
 {
