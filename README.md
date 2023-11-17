@@ -132,7 +132,12 @@ The following parameters are in use:
     * `<action>` equal to `crudAction` value from the defaults
     * `<name>` being the target controller class name (not FQCN - just the last part) stripped of `Controller`, written in _snake_case_
     * `<prefix>` is set to `pretty` by default. See Configuration to ways to change it.
-  * When routes are defined manually the _Installation step 3_ is not reuired.
+  * When routes are defined manually the _Installation step 3_ is not required.
+
+  You can generate a YAML routes configuration for existing controllers for further manual modifications by running
+  ```shell
+    bin/console pretty-routes:dump <resource>
+  ```
 
 ## Troubleshooting
 
@@ -146,5 +151,5 @@ The following parameters are in use:
 
   To see what is the outcome of parsing a `pretty_routes` Resource run the following command:
   ```shell
-    bin/console debug:pretty-routes <resource>
+    bin/console pretty-routes:debug <resource>
   ```
