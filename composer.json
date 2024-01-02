@@ -4,7 +4,7 @@
     "type": "symfony-bundle",
     "require": {
         "php": ">=8.0",
-        "symfony/framework-bundle": "^5.4|^6.0",
+        "symfony/framework-bundle": "^5.4|^6.0|^7.0",
         "easycorp/easyadmin-bundle": "^4.0"
     },
     "autoload": {
