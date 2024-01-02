@@ -1,12 +1,16 @@
 {# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
 {# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
-{% if 'toMany' == field.customOptions.get('associationType') %}
-    <span class="badge badge-secondary">{{ field.formattedValue }}</span>
+{% if field.value is null %}
+    {% include '@EasyAdmin/label/null.html.twig' %}
 {% else %}
-    {% if field.customOptions.get('relatedUrl') is not null %}
-        <a href="{{ field.customOptions.get('relatedUrl')|pretty_urls_remove_actions }}">{{ field.formattedValue }}</a>
+    {% if 'toMany' == field.customOptions.get('associationType') %}
+        <span class="badge badge-secondary">{{ field.formattedValue }}</span>
     {% else %}
-        {{ field.formattedValue }}
+        {% if field.customOptions.get('relatedUrl') is not null %}
+            <a href="{{ field.customOptions.get('relatedUrl')|pretty_urls_remove_actions }}">{{ field.formattedValue }}</a>
+        {% else %}
+            {{ field.formattedValue }}
+        {% endif %}
     {% endif %}
 {% endif %}
