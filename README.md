@@ -92,7 +92,7 @@ There are one function, and one filter being registered by a Twig extension in t
 
 ## Fine-tuning
 
-* ### Define custom URL
+* ### Define custom URL path
 
   By default, the URL is created as `<class_name>/<action_name>`.
 
@@ -113,9 +113,9 @@ There are one function, and one filter being registered by a Twig extension in t
 
 * ### Select actions to create routes for
 
-  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, and `batchDelete` actions.
+  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, `batchDelete` and `renderFilters` actions.
   
-  To change that, add a `PrettyRoutesController` attribute to the controller you want to modify and list the actions you want to have pretty routes for, in `actions` parameter.
+  To change them, add a `PrettyRoutesController` attribute to the controller you want to modify and list the actions you want to have pretty routes for, in `actions` parameter.
   ```php
   #[PrettyRoutesController(actions: ['index', 'foo', 'bar'])]
   class AnyFancyController {
