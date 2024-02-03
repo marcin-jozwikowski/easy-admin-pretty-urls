@@ -23,10 +23,10 @@ into
    
 1. Enable the bundle by adding it to your `config/bundles.php` if not enabled automatically
    ```php
-   [
-   ...
-    MarcinJozwikowski\EasyAdminPrettyUrls\EasyAdminPrettyUrlsBundle::class => ['all' => true],
-   ]
+   return [
+     // ...
+     MarcinJozwikowski\EasyAdminPrettyUrls\EasyAdminPrettyUrlsBundle::class => ['all' => true],
+   ];
    ```
    
 1. Add a routes set pointing to a directory containing your Controllers
@@ -119,7 +119,8 @@ There are one function, and one filter being registered by a Twig extension in t
   ```php
   #[PrettyRoutesController(actions: ['index', 'foo', 'bar'])]
   class AnyFancyController {
-  ...
+    // ...
+  }
   ```
 
 * ### Define routes manually
