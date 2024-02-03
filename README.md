@@ -64,12 +64,12 @@ into
 
 The following parameters are in use:
 
-  | Parameter            | Defalt value                                             | Description                                  | 
-  |----------------------|---------------------------------------|----------------------------------------------|
-  | `route_prefix`       | `pretty`                                                 | First part of route name                     |
-  | `default_dashboard`  | `App\\Controller\\EasyAdmin\\DashboardController::index` | Controller action to invoke                  |
-  | `include_menu_index` | `false`                                                  | Should menu index be included in path        |
-  | `drop_entity_fqcn`   | `false`                                                  | Should `entityFqcn` be removed from the URLs |
+  | Parameter            | Default value                                             | Description                                  | 
+  |----------------------|-----------------------------------------------------------|----------------------------------------------|
+  | `route_prefix`       | `pretty`                                                  | First part of route name                     |
+  | `default_dashboard`  | `App\Controller\EasyAdmin\DashboardController::index`     | Controller action to invoke                  |
+  | `include_menu_index` | `false`                                                   | Should menu index be included in path        |
+  | `drop_entity_fqcn`   | `false`                                                   | Should `entityFqcn` be removed from the URLs |
 
   To change the default values set the parameter in your `services.yaml`
   ```yaml
