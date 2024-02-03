@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Service;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesAction;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesController;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Dto\ActionRouteDto;
@@ -49,21 +48,16 @@ class ClassAnalyzer
      */
     private function getActions(ReflectionClass $reflection): array
     {
-        $defaultActions = [
-            Action::INDEX,
-            Action::NEW,
-            Action::DETAIL,
-            Action::EDIT,
-            Action::DELETE,
-            'renderFilters',
-        ];
-
         $attribute = $this->getControllerAttribute($reflection); // get the PrettyRoutesController attribute values
         if ($attribute === null) {
-            return $defaultActions; // if none defined - return default actions
+            return PrettyRoutesController::DEFAULT_ACTIONS; // if none defined - return default actions
         }
 
-        return $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? $defaultActions; // return defined actions or defaults
+        // if Attribute is defined, combine 'actions' and 'customActions'
+        return array_merge(
+            $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? PrettyRoutesController::DEFAULT_ACTIONS,
+            $attribute->getArguments()[PrettyRoutesController::ARGUMENT_CUSTOM_ACTIONS] ?? [],
+        );
     }
 
     private function getRouteForAction(ReflectionClass $reflection, string $action): ?ActionRouteDto

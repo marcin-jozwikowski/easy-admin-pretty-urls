@@ -35,7 +35,7 @@ into
     resource: 'src/Controller'
     type: 'pretty_routes'
    ```
-   The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See _Fine-tuning_ / _Define routes manually_ section to learn how this step can be ommitted.
+   The `resource` is a directory path relative to your projects root directory. Type must always equal to `pretty_routes`. See [_Fine-tuning_ / _Define routes manually_](#Fine-tuning) section to learn how this step can be ommitted.
    
    Other routing structures can be utilized as well, for example:
    ```yaml
@@ -113,14 +113,21 @@ There are one function, and one filter being registered by a Twig extension in t
 
 * ### Select actions to create routes for
 
-  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, and `delete` actions.
+  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, and `batchDelete` actions.
   
-  To change that, add a `PrettyRoutesController` attribute to the controller you want to modify and list the actions you want to have pretty routes in `actions` parameter.
+  To change that, add a `PrettyRoutesController` attribute to the controller you want to modify and list the actions you want to have pretty routes for, in `actions` parameter.
   ```php
   #[PrettyRoutesController(actions: ['index', 'foo', 'bar'])]
   class AnyFancyController {
     // ...
   }
+  ```
+  
+  You can also just add your custom actions to the default list by specifying `customActions` in `PrettyRoutesController` attribute.
+  ```php
+  #[PrettyRoutesController(customActions: ['foo', 'bar'])]
+  class AnyFancyController {
+  ...
   ```
 
 * ### Define routes manually
