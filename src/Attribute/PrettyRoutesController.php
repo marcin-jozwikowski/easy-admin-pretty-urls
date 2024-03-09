@@ -21,6 +21,7 @@ class PrettyRoutesController
         Action::DELETE,
         Action::BATCH_DELETE,
         'renderFilters',
+        'autocomplete'
     ];
 
     /**
