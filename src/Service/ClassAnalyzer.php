@@ -55,10 +55,10 @@ class ClassAnalyzer
         }
 
         // if Attribute is defined, combine 'actions' and 'customActions'
-        return array_merge(
+        return array_unique(array_merge(
             $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? $this->prettyUrlsDefaultActions,
             $attribute->getArguments()[PrettyRoutesController::ARGUMENT_CUSTOM_ACTIONS] ?? [],
-        );
+        ));
     }
 
     private function getRouteForAction(ReflectionClass $reflection, string $action): ?ActionRouteDto
