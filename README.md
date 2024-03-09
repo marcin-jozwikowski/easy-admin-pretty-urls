@@ -3,24 +3,28 @@
 ### Symfony Bundle that introduces customizable routes to EasyAdmin
 
 ## Example
+
 Turn
+
 ```
   http://ea-demo.loc/en/easyadmin?crudAction=index&crudControllerFqcn=App%5CController%5CEasyAdmin%5CPostCrudController
 ```
+
 into
+
 ```
   http://ea-demo.loc/en/post_crud/index
 ```
 
 ---
 
-## Instalation 
+## Instalation
 
 1. Install the bundle by running
    ```shell
    composer require marcin-jozwikowski/easy-admin-pretty-urls
    ```
-   
+
 1. Enable the bundle by adding it to your `config/bundles.php` if not enabled automatically
    ```php
    return [
@@ -28,7 +32,7 @@ into
      MarcinJozwikowski\EasyAdminPrettyUrls\EasyAdminPrettyUrlsBundle::class => ['all' => true],
    ];
    ```
-   
+
 1. Add a routes set pointing to a directory containing your Controllers
    ```yaml
    pretty_routes_name:
@@ -59,25 +63,27 @@ into
     }
    ```
 
-
 ## Configuration
 
 The following parameters are in use:
 
-  | Parameter            | Default value                                             | Description                                  | 
-  |----------------------|-----------------------------------------------------------|----------------------------------------------|
-  | `route_prefix`       | `pretty`                                                  | First part of route name                     |
-  | `default_dashboard`  | `App\Controller\EasyAdmin\DashboardController::index`     | Controller action to invoke                  |
-  | `include_menu_index` | `false`                                                   | Should menu index be included in path        |
-  | `drop_entity_fqcn`   | `false`                                                   | Should `entityFqcn` be removed from the URLs |
+| Parameter            | Default value                                                                                  | Description                                    | 
+|----------------------|------------------------------------------------------------------------------------------------|------------------------------------------------|
+| `route_prefix`       | `"pretty"`                                                                                     | First part of route name                       |
+| `default_dashboard`  | `"App\Controller\EasyAdmin\DashboardController::index"`                                        | Controller action to invoke                    |
+| `default_actions`    | `["index", "new", "detail", "edit", "delete", "batchDelete", "renderFilters", "autocomplete"]` | Default set of actions to build routes against |
+| `include_menu_index` | `false`                                                                                        | Should menu index be included in path          |
+| `drop_entity_fqcn`   | `false`                                                                                        | Should `entityFqcn` be removed from the URLs   |
 
-  To change the default values set the parameter in your `services.yaml`
+To change the default values set the parameter in your `services.yaml`
+
   ```yaml
     parameters:
       easy_admin_pretty_urls.<parameter>: '<new_value>'
   ```
 
-  Or create a `config/packages/easyadmin_pretty_urls.yaml` file with
+Or create a `config/packages/easyadmin_pretty_urls.yaml` file with
+
   ```yaml
     easy_admin_pretty_urls:
       <parameter>: '<new_value>'
@@ -100,6 +106,7 @@ There are one function, and one filter being registered by a Twig extension in t
   in `PrettyRoutesAction` attribute for the specific action.
 
   The following configuration will result in the action URL of `special/list` instead of the default `any_fancy/index`.
+
   ```php
   #[PrettyRoutesController(path: 'special')]
   class AnyFancyController {
@@ -113,9 +120,11 @@ There are one function, and one filter being registered by a Twig extension in t
 
 * ### Select actions to create routes for
 
-  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, `batchDelete` and `renderFilters` actions.
-  
-  To change them, add a `PrettyRoutesController` attribute to the controller you want to modify and list the actions you want to have pretty routes for, in `actions` parameter.
+  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, `batchDelete`, `renderFilters`, and `autocomplete` actions.
+
+  To change them globally set a proper [_configuration_](#Configuration) value. 
+  For a single-controller change add a `PrettyRoutesController` attribute to the controller and name the actions you want to have pretty routes for, in `actions` parameter.
+
   ```php
   #[PrettyRoutesController(actions: ['index', 'foo', 'bar'])]
   class AnyFancyController {
@@ -132,6 +141,7 @@ There are one function, and one filter being registered by a Twig extension in t
 
 * ### Define routes manually
   Instead of defining a `pretty_routes` routes to automatically parse all classes in a directory you can ceate routes that will replace your default EasyAdmin CRUD actions.
+
   ```yaml
   pretty_foobar_index:
     path: /foobar-url
@@ -150,6 +160,7 @@ There are one function, and one filter being registered by a Twig extension in t
   * When routes are defined manually the _Installation step 3_ is not required.
 
   You can generate a YAML routes configuration for existing controllers for further manual modifications by running
+
   ```shell
     bin/console pretty-routes:dump <resource>
   ```
@@ -165,6 +176,7 @@ There are one function, and one filter being registered by a Twig extension in t
 * ### Checking the Resource parsing results
 
   To see what is the outcome of parsing a `pretty_routes` Resource run the following command:
+
   ```shell
     bin/console pretty-routes:debug <resource>
   ```
