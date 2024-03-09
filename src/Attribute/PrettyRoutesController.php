@@ -25,9 +25,10 @@ class PrettyRoutesController
 
     /**
      * @param string[]|null $actions
+     * @param string[]|null $customActions
      */
     public function __construct(
-        public array $actions = self::DEFAULT_ACTIONS,
+        public ?array $actions = null,
         public ?array $customActions = null,
         public ?string $path = null,
     ) {

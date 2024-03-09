@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\DependencyInjection;
 
+use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesController;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -37,6 +38,11 @@ class EasyAdminPrettyUrlsExtension extends Extension
         $container->setParameter(
             Configuration::ROOT_NODE.'.'.Configuration::DROP_ENTITY_FQCN_NODE,
             $config[Configuration::DROP_ENTITY_FQCN_NODE],
+        );
+
+        $container->setParameter(
+            Configuration::ROOT_NODE.'.'.Configuration::DEFAULT_ACTIONS_NODE,
+            empty($config[Configuration::DEFAULT_ACTIONS_NODE]) ? PrettyRoutesController::DEFAULT_ACTIONS : $config[Configuration::DEFAULT_ACTIONS_NODE],
         );
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../config'));

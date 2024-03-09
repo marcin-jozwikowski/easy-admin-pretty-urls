@@ -23,6 +23,7 @@ class ClassAnalyzer
         private RouteNamingGenerator $routeNamingGenerator,
         private string $prettyUrlsDefaultDashboard,
         private bool $prettyUrlsIncludeMenuIndex,
+        private array $prettyUrlsDefaultActions,
     ) {
     }
 
@@ -50,12 +51,12 @@ class ClassAnalyzer
     {
         $attribute = $this->getControllerAttribute($reflection); // get the PrettyRoutesController attribute values
         if ($attribute === null) {
-            return PrettyRoutesController::DEFAULT_ACTIONS; // if none defined - return default actions
+            return $this->prettyUrlsDefaultActions; // if none defined - return default actions
         }
 
         // if Attribute is defined, combine 'actions' and 'customActions'
         return array_merge(
-            $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? PrettyRoutesController::DEFAULT_ACTIONS,
+            $attribute->getArguments()[PrettyRoutesController::ARGUMENT_ACTIONS] ?? $this->prettyUrlsDefaultActions,
             $attribute->getArguments()[PrettyRoutesController::ARGUMENT_CUSTOM_ACTIONS] ?? [],
         );
     }

@@ -12,6 +12,7 @@ class Configuration implements ConfigurationInterface
     public const ROOT_NODE = 'easy_admin_pretty_urls';
     public const ROUTE_PREFIX_NODE = 'route_prefix';
     public const DEFAULT_DASHBOARD_NODE = 'default_dashboard';
+    public const DEFAULT_ACTIONS_NODE = 'default_actions';
     public const INCLUDE_MENU_INDEX_NODE = 'include_menu_index';
     public const DROP_ENTITY_FQCN_NODE = 'drop_entity_fqcn';
 
@@ -33,6 +34,9 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->booleanNode(self::DROP_ENTITY_FQCN_NODE)
                     ->defaultFalse()
+                ->end()
+                ->arrayNode(self::DEFAULT_ACTIONS_NODE)
+                    ->prototype('scalar')->end()
                 ->end()
             ->end();
 
