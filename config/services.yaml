@@ -8,6 +8,7 @@ services:
       $prettyUrlsIncludeMenuIndex: '%easy_admin_pretty_urls.include_menu_index%'
       $prettyUrlsDropEntityFqcn: '%easy_admin_pretty_urls.drop_entity_fqcn%'
       $prettyUrlsDefaultDashboard: '%easy_admin_pretty_urls.default_dashboard%'
+      $prettyUrlsDefaultActions: '%easy_admin_pretty_urls.default_actions%'
 
   MarcinJozwikowski\EasyAdminPrettyUrls\:
     resource: '../src/'
