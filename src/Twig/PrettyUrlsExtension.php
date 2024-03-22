@@ -45,7 +45,7 @@ class PrettyUrlsExtension extends AbstractExtension
 
         $matches = [];
         preg_match('#referrer=([\d\w/,-?%]+)[&]?#', $value, $matches); // match the original referrer
-        if ($matches[1]) {
+        if (isset($matches[1])) {
             $finalReferrer = $this->prettyUrlsGenerator->sanitizeUrl($mainQueryParams[PrettyUrlsGenerator::EA_REFERRER]);
 
             return str_replace($matches[1], $finalReferrer, $value); // replace the old referrer with the new one

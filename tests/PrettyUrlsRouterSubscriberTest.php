@@ -19,6 +19,7 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
     private const CRUD_FQCN = 'crudControllerFqcn';
     private const CRUD_ACTION = 'crudAction';
     private const CRUD_MENU_INDEX = 'menuIndex';
+    private const CRUD_ENTITY_ID = 'entityId';
     private const CRUD_SUBMENU_INDEX = 'submenuIndex';
     private const MENU_PATH = 'menuPath';
 
@@ -66,10 +67,10 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
     {
         $consecutiveValues = [base64_encode(random_bytes(5)), base64_encode(random_bytes(5))];
 
-        $this->attributes->expects(self::exactly(3))
+        $this->attributes->expects(self::exactly(4))
             ->method('has')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::MENU_PATH])
-            ->willReturnOnConsecutiveCalls(true, true, false);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturnOnConsecutiveCalls(true, true, false, false);
 
         $this->attributes->expects(self::exactly(2))
             ->method('get')
@@ -92,25 +93,66 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
         $this->testedClass->onKernelRequest($this->event);
     }
 
-    public function testOnKernelRequestForMenuIndex(): void
+    public function testOnKernelRequestForAll(): void
     {
         $menuIndex = base64_encode(random_bytes(5));
         $submenuIndex = base64_encode(random_bytes(5));
         $consecutiveValues = [
             base64_encode(random_bytes(5)),
             base64_encode(random_bytes(5)),
+            random_int(10, 100),
             $menuIndex.','.$submenuIndex,
         ];
 
-        $this->attributes->expects(self::exactly(3))
+        $this->attributes->expects(self::exactly(4))
             ->method('has')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::MENU_PATH])
-            ->willReturnOnConsecutiveCalls(true, true, true);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturnOnConsecutiveCalls(true, true, true, true);
 
-        $this->attributes->expects(self::exactly(3))
+        $this->attributes->expects(self::exactly(4))
             ->method('get')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::MENU_PATH])
-            ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1], $consecutiveValues[2]);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1], $consecutiveValues[2], $consecutiveValues[3]);
+
+        $this->query->expects(self::exactly(5))
+            ->method('set')
+            ->withConsecutive(
+                [self::CRUD_FQCN, $consecutiveValues[0]],
+                [self::CRUD_ACTION, $consecutiveValues[1]],
+                [self::CRUD_ENTITY_ID, $consecutiveValues[2]],
+                [self::CRUD_MENU_INDEX, $menuIndex],
+                [self::CRUD_SUBMENU_INDEX, $submenuIndex],
+            )
+            ->willReturn(null);
+
+        $this->attributes->expects(self::exactly(4))
+            ->method('remove')
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturn(null);
+
+        $this->testedClass->onKernelRequest($this->event);
+    }
+
+    public function testOnKernelRequestForEmptyEntityId(): void
+    {
+        $menuIndex = base64_encode(random_bytes(5));
+        $submenuIndex = base64_encode(random_bytes(5));
+        $consecutiveValues = [
+            base64_encode(random_bytes(5)),
+            base64_encode(random_bytes(5)),
+            '',
+            $menuIndex.','.$submenuIndex,
+        ];
+
+        $this->attributes->expects(self::exactly(4))
+            ->method('has')
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturnOnConsecutiveCalls(true, true, true, true);
+
+        $this->attributes->expects(self::exactly(4))
+            ->method('get')
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
+            ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1], $consecutiveValues[2], $consecutiveValues[3]);
 
         $this->query->expects(self::exactly(4))
             ->method('set')
@@ -122,9 +164,9 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             )
             ->willReturn(null);
 
-        $this->attributes->expects(self::exactly(3))
+        $this->attributes->expects(self::exactly(4))
             ->method('remove')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::MENU_PATH])
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
             ->willReturn(null);
 
         $this->testedClass->onKernelRequest($this->event);
