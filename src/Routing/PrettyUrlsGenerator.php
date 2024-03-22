@@ -22,6 +22,7 @@ class PrettyUrlsGenerator implements UrlGeneratorInterface
     public const EA_MENU_INDEX = 'menuIndex';
     public const EA_SUBMENU_INDEX = 'submenuIndex';
     public const EA_ENTITY_FQCN = 'entityFqcn';
+    public const EA_ENTITY_ID = 'entityId';
     public const MENU_PATH = 'menuPath';
     public const EA_REFERRER = 'referrer';
 

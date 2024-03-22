@@ -66,7 +66,7 @@ class PrettyUrlsExtensionTest extends TestCase
     /**
      * @dataProvider removeActionData
      */
-    public function testRemoveAction(string $url, string $expected, ?array $sanitizeArguments, string $sanitizeResult): void
+    public function testRemoveAction(string $url, string $expected, ?array $sanitizeArguments, ?string $sanitizeResult): void
     {
         if ($sanitizeArguments) {
             $this->generator->method('sanitizeUrl')
@@ -84,11 +84,12 @@ class PrettyUrlsExtensionTest extends TestCase
         $randomPath = substr(sha1(random_bytes(8)), 1, 4).'/'.substr(sha1(random_bytes(8)), 1, 6);
 
         return [
-            ['', '', null, ''],
-            ['https://some.url', 'https://some.url', null, ''],
-            ['/some/path', '/some/path', null, ''],
-            ['/some/path?page=12', '/some/path?page=12', null, ''],
-            ['/some/path?page=12&referrer=', '/some/path?page=12&referrer=', null, ''],
+            ['', '', null, null],
+            ['https://some.url', 'https://some.url', null, null],
+            ['/some/path', '/some/path', null, null],
+            ['/some/path?page=12', '/some/path?page=12', null, null],
+            ['/some/path?page=12&referrer=', '/some/path?page=12&referrer=', null, null],
+            ['/some/path?page=12&referrer=!ref', '/some/path?page=12&referrer=!ref', null, null],
             ['/some/path?page=12&referrer=/ref', '/some/path?page=12&referrer='.$randomPath, ['/ref'], $randomPath],
             ['/some/path?page=12&referrer=/ref?action=index', '/some/path?page=12&referrer='.$randomPath, ['/ref?action=index'], $randomPath],
             ['/some/path?page=12&referrer=/'.$randomPath, '/some/path?page=12&referrer='.$randomPath, ['/'.$randomPath], $randomPath],

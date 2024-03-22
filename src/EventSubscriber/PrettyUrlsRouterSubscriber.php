@@ -14,6 +14,7 @@ class PrettyUrlsRouterSubscriber implements EventSubscriberInterface
     private const REQUEST_ATTRIBUTES_TO_QUERY = [
         PrettyUrlsGenerator::EA_FQCN,
         PrettyUrlsGenerator::EA_ACTION,
+        PrettyUrlsGenerator::EA_ENTITY_ID,
     ];
 
     public static function getSubscribedEvents(): array
@@ -34,8 +35,13 @@ class PrettyUrlsRouterSubscriber implements EventSubscriberInterface
         foreach (self::REQUEST_ATTRIBUTES_TO_QUERY as $attributeName) {
             if ($request->attributes->has($attributeName)) {
                 // move values defined in route back to query parameters for EA to read
-                $request->query->set($attributeName, $request->attributes->get($attributeName));
+                $attributeValue = $request->attributes->get($attributeName);
                 $request->attributes->remove($attributeName);
+                if ($attributeName === PrettyUrlsGenerator::EA_ENTITY_ID && empty($attributeValue)) {
+                    // do not restore empty entityId value
+                    continue;
+                }
+                $request->query->set($attributeName, $attributeValue);
             }
         }
 
