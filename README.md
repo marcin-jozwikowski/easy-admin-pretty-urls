@@ -67,13 +67,13 @@ into
 
 The following parameters are in use:
 
-| Parameter            | Default value                                                                                  | Description                                    | 
-|----------------------|------------------------------------------------------------------------------------------------|------------------------------------------------|
-| `route_prefix`       | `"pretty"`                                                                                     | First part of route name                       |
-| `default_dashboard`  | `"App\Controller\EasyAdmin\DashboardController::index"`                                        | Controller action to invoke                    |
-| `default_actions`    | `["index", "new", "detail", "edit", "delete", "batchDelete", "renderFilters", "autocomplete"]` | Default set of actions to build routes against |
-| `include_menu_index` | `false`                                                                                        | Should menu index be included in path          |
-| `drop_entity_fqcn`   | `false`                                                                                        | Should `entityFqcn` be removed from the URLs   |
+| Parameter            | Default value                                                                                  | Description                                                        | 
+|----------------------|------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `route_prefix`       | `"pretty"`                                                                                     | First part of route name                                           |
+| `default_dashboard`  | `"App\Controller\EasyAdmin\DashboardController::index"`                                        | Default controller action to invoke if not specified in attributes |
+| `default_actions`    | `["index", "new", "detail", "edit", "delete", "batchDelete", "renderFilters", "autocomplete"]` | Default set of actions to build routes against                     |
+| `include_menu_index` | `false`                                                                                        | Should menu index be included in path                              |
+| `drop_entity_fqcn`   | `false`                                                                                        | Should `entityFqcn` be removed from the URLs                       |
 
 To change the default values set the parameter in your `services.yaml`
 
@@ -138,13 +138,22 @@ There are one function, and one filter being registered by a Twig extension in t
 
 * ### Select actions to create routes for
 
-  By default pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, `batchDelete`, `renderFilters`, and `autocomplete` actions.
+  By default, pretty routes are generated for `index`, `new`, `detail`, `edit`, `delete`, `batchDelete`, `renderFilters`, and `autocomplete` actions.
 
   To change them globally set a proper [_configuration_](#Configuration) value. 
   For a single-controller change add a `PrettyRoutesController` attribute to the controller and name the actions you want to have pretty routes for, in `actions` parameter.
 
   ```php
   #[PrettyRoutesController(actions: ['index', 'foo', 'bar'])]
+  class AnyFancyController {
+    // ...
+  }
+  
+  /**
+  * You can also (optionally) specify your own dashboard controller if you're using more than one in your project.
+  * This will avoid to have an incorrect sidebar/user menu by addressing the request to the right dashboard controller
+  */
+  #[PrettyRoutesController(actions: ['index', 'foo', 'bar'], dasboard: YourCrudController::class . '::yourCrudAction')]
   class AnyFancyController {
     // ...
   }
@@ -158,7 +167,7 @@ There are one function, and one filter being registered by a Twig extension in t
   ```
 
 * ### Define routes manually
-  Instead of defining a `pretty_routes` routes to automatically parse all classes in a directory you can ceate routes that will replace your default EasyAdmin CRUD actions.
+  Instead of defining a `pretty_routes` routes to automatically parse all classes in a directory you can create routes that will replace your default EasyAdmin CRUD actions.
 
   ```yaml
   pretty_foobar_index:
@@ -189,7 +198,7 @@ There are one function, and one filter being registered by a Twig extension in t
 
   If your routes are still not generated despite being added, check your logs for `'Pretty route not found'` with `debug` level. Those will list all the EasyAdmin routes that did not have their pretty counterparts.
 
-  Most probably, there's some naming missmatch.
+  Most probably, there's some naming mismatch.
 
 * ### Checking the Resource parsing results
 
