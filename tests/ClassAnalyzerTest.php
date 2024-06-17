@@ -397,4 +397,33 @@ class ClassAnalyzerTest extends TestCase
         self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
         self::assertEquals('/specific_crud/'.$action, $routes[0]->getPath());
     }
+
+    public function testControllerAttribute()
+    {
+        $controller = base64_encode(random_bytes(random_int(10, 16)));
+
+        $this->testedAnalyzer = new ClassAnalyzer(
+            routeNamingGenerator: new RouteNamingGenerator($this->randomPrefix),
+            prettyUrlsDefaultDashboard: self::DEFAULT_DASHBOARD,
+            prettyUrlsIncludeMenuIndex: false,
+            prettyUrlsDefaultActions: ['default'],
+        );
+
+        $this->reflectionAttribute = $this->createMock(ReflectionAttribute::class);
+        $this->reflectionAttribute->expects(self::any())
+            ->method('getArguments')
+            ->willReturn([PrettyRoutesController::ARGUMENT_DASHBOARD => $controller]);
+
+        $this->reflection->expects(self::any())
+            ->method('getAttributes')
+            ->with(PrettyRoutesController::class)
+            ->willReturn([$this->reflectionAttribute]);
+
+        $routes = $this->testedAnalyzer->getRouteDtosForReflectionClass($this->reflection);
+
+        self::assertCount(1, $routes);
+        self::assertInstanceOf(ActionRouteDto::class, $routes[0]);
+        self::assertEquals('/specific_crud/default', $routes[0]->getPath());
+        self::assertEquals($controller, $routes[0]->getDefaults()['_controller']);
+    }
 }
