@@ -93,10 +93,12 @@ class ClassAnalyzer
 
     private function makeRouteDto(ReflectionClass $reflection, string $action, string $actionPath): ActionRouteDto
     {
+        // determine the first part of the final URL - classname or the value from PrettyRoutesController attribute
+        $classAttribute = $this->getControllerAttribute($reflection);
         $routePathFormat = '/%s/%s';
         $routeDefaults = [
             // set route values
-            '_controller' => $this->prettyUrlsDefaultDashboard,
+            '_controller' => $classAttribute?->getArguments()[PrettyRoutesController::ARGUMENT_DASHBOARD] ?? $this->prettyUrlsDefaultDashboard,
             PrettyUrlsGenerator::EA_FQCN => $reflection->getName(),
             PrettyUrlsGenerator::EA_ACTION => $action,
         ];
@@ -108,8 +110,6 @@ class ClassAnalyzer
         }
 
         $simpleName = $this->routeNamingGenerator->generateSimplifiedClassName($reflection->getName());
-        // determine the first part of the final URL - classname or the value from PrettyRoutesController attribute
-        $classAttribute = $this->getControllerAttribute($reflection);
         $classPath = $classAttribute?->getArguments()[PrettyRoutesController::ARGUMENT_PATH] ?? $simpleName;
 
         return new ActionRouteDto(

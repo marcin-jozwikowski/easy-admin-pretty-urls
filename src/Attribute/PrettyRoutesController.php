@@ -13,6 +13,7 @@ class PrettyRoutesController
     public const ARGUMENT_ACTIONS = 'actions';
     public const ARGUMENT_CUSTOM_ACTIONS = 'customActions';
     public const ARGUMENT_PATH = 'path';
+    public const ARGUMENT_DASHBOARD = 'dashboard';
     public const DEFAULT_ACTIONS = [
         Action::INDEX,
         Action::NEW,
@@ -32,6 +33,7 @@ class PrettyRoutesController
         public ?array $actions = null,
         public ?array $customActions = null,
         public ?string $path = null,
+        public ?string $dashboard = null,
     ) {
     }
 }
