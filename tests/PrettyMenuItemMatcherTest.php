@@ -81,7 +81,7 @@ class PrettyMenuItemMatcherTest extends TestCase
     /**
      * @dataProvider isSelectedResolvesProvider
      */
-    public function testIsSelectedMultipleCalls(array $firstResolve, array $secondResolve, bool $expectedResult): void
+    public function testIsSelectedMultipleCalls(array $menuResolve, array $requestResolve, bool $expectedResult): void
     {
         $url = base64_encode(random_bytes(random_int(4, 8)));
         $url2 = base64_encode(random_bytes(random_int(4, 8)));
@@ -97,9 +97,9 @@ class PrettyMenuItemMatcherTest extends TestCase
             ->method('resolveToParams')
             ->withConsecutive([$url], [$url2], [$url3])
             ->willReturnOnConsecutiveCalls(
-                $firstResolve, // menu item
-                $secondResolve, // request
-                $firstResolve, // the same result for second menu item
+                $menuResolve,
+                $requestResolve,
+                $menuResolve,
             );
         $this->request->expects(self::once())
             ->method('getUri')
@@ -155,6 +155,46 @@ class PrettyMenuItemMatcherTest extends TestCase
         self::assertSame($expectedResult, $actualResult);
     }
 
+    /**
+     * @dataProvider isSelectedResolvesProvider
+     */
+    public function testMarkSelectedMenuItem(array $menuItemResolve, array $requestResolve, bool $expectedResult): void
+    {
+        $url = base64_encode(random_bytes(random_int(4, 8)));
+        $url2 = base64_encode(random_bytes(random_int(4, 8)));
+        $url3 = base64_encode(random_bytes(random_int(4, 8)));
+
+        $menuItem = new MenuItemDto();
+        $menuItem->setLinkUrl($url);
+
+        $menuItem2 = new MenuItemDto();
+        $menuItem2->setLinkUrl($url3);
+        $menuItem->setSubItems([$menuItem2]);
+        $menuItem3 = new MenuItemDto();
+        $menuItem3->setType(MenuItemDto::TYPE_SECTION);
+
+
+        $this->prettyUrlsResolver->expects(self::exactly(3))
+            ->method('resolveToParams')
+            ->withConsecutive([$url3], [$url2], [$url])
+            ->willReturnOnConsecutiveCalls(
+                $menuItemResolve,
+                $requestResolve,
+                $menuItemResolve,
+            );
+        $this->request->expects(self::once())
+            ->method('getUri')
+            ->willReturn($url2);
+
+        $results = $this->tested->markSelectedMenuItem([$menuItem, $menuItem3], $this->request);
+
+        self::assertCount(2, $results);
+        self::assertSame($expectedResult, $results[0]->isSelected());
+        self::assertSame($expectedResult, $results[0]->isExpanded());
+        self::assertFalse($results[1]->isSelected());
+        self::assertFalse($results[1]->isExpanded());
+    }
+
     public function booleanProvider(): array
     {
         return [
@@ -163,7 +203,7 @@ class PrettyMenuItemMatcherTest extends TestCase
         ];
     }
 
-    public function isSelectedResolvesProvider()
+    public function isSelectedResolvesProvider(): array
     {
         $routeParam = 'p'.random_int(1, 2000);
         $routeValue = 'v'.random_int(1, 2000);

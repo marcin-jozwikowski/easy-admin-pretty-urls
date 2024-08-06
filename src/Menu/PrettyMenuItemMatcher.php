@@ -12,21 +12,31 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\MenuItemDto;
 use EasyCorp\Bundle\EasyAdminBundle\Menu\MenuItemMatcher;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsResolver;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 use function in_array;
 
 use const ARRAY_FILTER_USE_KEY;
 
+/**
+ * This class implements two versions of MenuItemMatcherInterface:
+ * >= 4.8.1 & <4.11.0 with isSelected() and isExpanded()
+ * >=4.11.0 with markSelectedMenuItem
+ *
+ * Both implementations utilize the same logic - resolve the pretty URL back to parameters,
+ * and compare current request to menuItem
+ */
 class PrettyMenuItemMatcher implements MenuItemMatcherInterface
 {
     private array $requestParameters;
 
     public function __construct(
-        private MenuItemMatcher $menuItemMatcher,
-        private PrettyUrlsResolver $prettyUrlsResolver,
+        private MenuItemMatcher      $menuItemMatcher,
+        private PrettyUrlsResolver   $prettyUrlsResolver,
         private AdminContextProvider $adminContextProvider,
-    ) {
+    )
+    {
     }
 
     /**
@@ -69,6 +79,19 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     }
 
     /**
+     * @param MenuItemDto[] $menuItems
+     *
+     * @return MenuItemDto[]
+     */
+    public function markSelectedMenuItem(array $menuItems, Request $request): array
+    {
+        $this->doMarkSelectedMenuItem($menuItems, $request);
+        $this->doMarkExpandedMenuItem($menuItems);
+
+        return $menuItems;
+    }
+
+    /**
      * Parses the current request from AdminContext into a series.
      */
     private function setUpRequestParameters(AdminContext $adminContext): void
@@ -90,9 +113,51 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
             $paramsToRemove[] = EA::ENTITY_ID;
         }
 
-        $result = array_filter($queryStringParameters, static fn ($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
+        $result = array_filter($queryStringParameters, static fn($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
         sort($result);
 
         return $result;
+    }
+
+    /**
+     * @param MenuItemDto[] $menuItems
+     *
+     * @return MenuItemDto[]
+     */
+    private function doMarkSelectedMenuItem(array $menuItems, Request $request): array
+    {
+        foreach ($menuItems as $menuItemDto) {
+            if ([] !== $subItems = $menuItemDto->getSubItems()) {
+                $menuItemDto->setSubItems($this->doMarkSelectedMenuItem($subItems, $request));
+            }
+
+            $menuItemDto->setSelected($this->isSelected($menuItemDto));
+        }
+
+        return $menuItems;
+    }
+
+    /**
+     * @param MenuItemDto[] $menuItems
+     *
+     * @return MenuItemDto[]
+     */
+    private function doMarkExpandedMenuItem(array $menuItems): array
+    {
+        foreach ($menuItems as $menuItemDto) {
+            if ([] === $menuSubitems = $menuItemDto->getSubItems()) {
+                continue;
+            }
+
+            foreach ($menuSubitems as $submenuItem) {
+                if ($submenuItem->isSelected()) {
+                    $menuItemDto->setExpanded(true);
+
+                    break;
+                }
+            }
+        }
+
+        return $menuItems;
     }
 }
