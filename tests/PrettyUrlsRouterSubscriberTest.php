@@ -7,6 +7,7 @@ namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
 use MarcinJozwikowski\EasyAdminPrettyUrls\EventSubscriber\PrettyUrlsRouterSubscriber;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -24,7 +25,7 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
     private const MENU_PATH = 'menuPath';
 
     private MockObject|ParameterBag $attributes;
-    private MockObject|ParameterBag $query;
+    private InputBag $query;
     private PrettyUrlsRouterSubscriber $testedClass;
     private RequestEvent|MockObject $event;
 
@@ -33,7 +34,7 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
         parent::setUp();
 
         $this->attributes = $this->createMock(ParameterBag::class);
-        $this->query = $this->createMock(ParameterBag::class);
+        $this->query = new InputBag();
 
         $request = $this->createMock(Request::class);
         $request->attributes = $this->attributes;
@@ -53,9 +54,6 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             ->method('has')
             ->withAnyParameters()
             ->willReturn(false);
-
-        $this->query->expects(self::never())
-            ->method('set');
 
         $this->attributes->expects(self::never())
             ->method('remove');
@@ -77,18 +75,9 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION])
             ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1]);
 
-        $this->query->expects(self::exactly(2))
-            ->method('set')
-            ->withConsecutive(
-                [self::CRUD_FQCN, $consecutiveValues[0]],
-                [self::CRUD_ACTION, $consecutiveValues[1]],
-            )
-            ->willReturn(null);
-
         $this->attributes->expects(self::exactly(2))
             ->method('remove')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION])
-            ->willReturn(null);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION]);
 
         $this->testedClass->onKernelRequest($this->event);
     }
@@ -114,21 +103,9 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
             ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1], $consecutiveValues[2], $consecutiveValues[3]);
 
-        $this->query->expects(self::exactly(5))
-            ->method('set')
-            ->withConsecutive(
-                [self::CRUD_FQCN, $consecutiveValues[0]],
-                [self::CRUD_ACTION, $consecutiveValues[1]],
-                [self::CRUD_ENTITY_ID, $consecutiveValues[2]],
-                [self::CRUD_MENU_INDEX, $menuIndex],
-                [self::CRUD_SUBMENU_INDEX, $submenuIndex],
-            )
-            ->willReturn(null);
-
         $this->attributes->expects(self::exactly(4))
             ->method('remove')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
-            ->willReturn(null);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH]);
 
         $this->testedClass->onKernelRequest($this->event);
     }
@@ -154,20 +131,9 @@ class PrettyUrlsRouterSubscriberTest extends TestCase
             ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
             ->willReturnOnConsecutiveCalls($consecutiveValues[0], $consecutiveValues[1], $consecutiveValues[2], $consecutiveValues[3]);
 
-        $this->query->expects(self::exactly(4))
-            ->method('set')
-            ->withConsecutive(
-                [self::CRUD_FQCN, $consecutiveValues[0]],
-                [self::CRUD_ACTION, $consecutiveValues[1]],
-                [self::CRUD_MENU_INDEX, $menuIndex],
-                [self::CRUD_SUBMENU_INDEX, $submenuIndex],
-            )
-            ->willReturn(null);
-
         $this->attributes->expects(self::exactly(4))
             ->method('remove')
-            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH])
-            ->willReturn(null);
+            ->withConsecutive([self::CRUD_FQCN], [self::CRUD_ACTION], [self::CRUD_ENTITY_ID], [self::MENU_PATH]);
 
         $this->testedClass->onKernelRequest($this->event);
     }
