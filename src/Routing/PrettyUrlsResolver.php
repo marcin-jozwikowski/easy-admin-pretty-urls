@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Routing;
@@ -9,9 +10,7 @@ class PrettyUrlsResolver
 {
     public function __construct(
         private RouterInterface $router,
-    )
-    {
-
+    ) {
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MarcinJozwikowski\EasyAdminPrettyUrls\Menu;
@@ -12,7 +13,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Menu\MenuItemMatcher;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsResolver;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+
 use function in_array;
+
 use const ARRAY_FILTER_USE_KEY;
 
 class PrettyMenuItemMatcher implements MenuItemMatcherInterface
@@ -20,11 +23,10 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     private array $requestParameters;
 
     public function __construct(
-        private MenuItemMatcher      $menuItemMatcher,
-        private PrettyUrlsResolver   $prettyUrlsResolver,
+        private MenuItemMatcher $menuItemMatcher,
+        private PrettyUrlsResolver $prettyUrlsResolver,
         private AdminContextProvider $adminContextProvider,
-    )
-    {
+    ) {
     }
 
     /**
@@ -59,7 +61,7 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     }
 
     /**
-     * Just re-using the existing logic - if any child is selected the whole branch is expanded
+     * Just re-using the existing logic - if any child is selected the whole branch is expanded.
      */
     public function isExpanded(MenuItemDto $menuItemDto): bool
     {
@@ -67,7 +69,7 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     }
 
     /**
-     * Parses the current request from AdminContext into a series
+     * Parses the current request from AdminContext into a series.
      */
     private function setUpRequestParameters(AdminContext $adminContext): void
     {
@@ -88,7 +90,7 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
             $paramsToRemove[] = EA::ENTITY_ID;
         }
 
-        $result = array_filter($queryStringParameters, static fn($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
+        $result = array_filter($queryStringParameters, static fn ($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
         sort($result);
 
         return $result;

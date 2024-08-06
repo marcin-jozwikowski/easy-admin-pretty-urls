@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
+namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests\Service;
 
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassFinder;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Tests\data\ExampleClass;
@@ -17,7 +17,7 @@ class ClassFinderTest extends TestCase
     public function testGetClassNames(): void
     {
         $finder = new ClassFinder(__DIR__.DIRECTORY_SEPARATOR.'..');
-        $names = $finder->getClassNames('tests/data');
+        $names = $finder->getClassNames('data');
         $names = array_flip($names);
 
         self::assertIsArray($names);

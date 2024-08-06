@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
+namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests\Service;
 
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Attribute\PrettyRoutesAction;
@@ -14,7 +14,6 @@ use MarcinJozwikowski\EasyAdminPrettyUrls\Service\ClassAnalyzer;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Service\RouteNamingGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Random\RandomException;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -338,9 +337,6 @@ class ClassAnalyzerTest extends TestCase
         self::assertEquals('/specific_crud/customAction', $routes[1]->getPath());
     }
 
-    /**
-     * @throws RandomException
-     */
     public function testDefaultActionsRedefined(): void
     {
         $actions = [];
