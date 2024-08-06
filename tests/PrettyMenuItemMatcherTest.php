@@ -173,7 +173,6 @@ class PrettyMenuItemMatcherTest extends TestCase
         $menuItem3 = new MenuItemDto();
         $menuItem3->setType(MenuItemDto::TYPE_SECTION);
 
-
         $this->prettyUrlsResolver->expects(self::exactly(3))
             ->method('resolveToParams')
             ->withConsecutive([$url3], [$url2], [$url])

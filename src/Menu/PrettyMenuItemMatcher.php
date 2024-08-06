@@ -32,11 +32,10 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     private array $requestParameters;
 
     public function __construct(
-        private MenuItemMatcher      $menuItemMatcher,
-        private PrettyUrlsResolver   $prettyUrlsResolver,
+        private MenuItemMatcher $menuItemMatcher,
+        private PrettyUrlsResolver $prettyUrlsResolver,
         private AdminContextProvider $adminContextProvider,
-    )
-    {
+    ) {
     }
 
     /**
@@ -113,7 +112,7 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
             $paramsToRemove[] = EA::ENTITY_ID;
         }
 
-        $result = array_filter($queryStringParameters, static fn($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
+        $result = array_filter($queryStringParameters, static fn ($k) => !in_array($k, $paramsToRemove, true), ARRAY_FILTER_USE_KEY);
         sort($result);
 
         return $result;

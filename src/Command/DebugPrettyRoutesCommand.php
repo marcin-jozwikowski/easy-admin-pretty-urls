@@ -21,7 +21,7 @@ class DebugPrettyRoutesCommand extends Command
 {
     public function __construct(
         private PrettyRoutesLoader $prettyRoutesLoader,
-        string $name = null,
+        ?string $name = null,
     ) {
         parent::__construct($name);
     }

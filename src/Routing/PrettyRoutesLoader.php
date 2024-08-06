@@ -23,7 +23,7 @@ class PrettyRoutesLoader extends Loader
     public function __construct(
         private ClassFinder $classFinder,
         private ClassAnalyzer $classAnalyzer,
-        string $env = null,
+        ?string $env = null,
     ) {
         parent::__construct($env);
     }
@@ -31,7 +31,7 @@ class PrettyRoutesLoader extends Loader
     /**
      * @throws RouteAlreadyExists
      */
-    public function load($resource, string $type = null): RouteCollection
+    public function load($resource, ?string $type = null): RouteCollection
     {
         $routes = new RouteCollection();
 
@@ -49,7 +49,7 @@ class PrettyRoutesLoader extends Loader
         return $routes;
     }
 
-    public function supports($resource, string $type = null): bool
+    public function supports($resource, ?string $type = null): bool
     {
         return 'pretty_routes' === $type;
     }

@@ -12,6 +12,6 @@ class EasyAdminPrettyUrlsBundle extends Bundle
 {
     public function getContainerExtension(): ?ExtensionInterface
     {
-        return new EasyadminPrettyUrlsExtension();
+        return new EasyAdminPrettyUrlsExtension();
     }
 }
