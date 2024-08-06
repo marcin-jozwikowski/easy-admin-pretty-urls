@@ -28,5 +28,8 @@ services:
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\DashboardControllerRegistry'
       - '@EasyCorp\Bundle\EasyAdminBundle\Registry\CrudControllerRegistry'
 
+  EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemMatcherInterface:
+    class: \MarcinJozwikowski\EasyAdminPrettyUrls\Menu\PrettyMenuItemMatcher
+
   MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader:
     tags: [routing.loader]

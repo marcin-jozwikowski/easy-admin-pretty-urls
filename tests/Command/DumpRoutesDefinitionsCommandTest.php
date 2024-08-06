@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
+namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests\Command;
 
 use Exception;
-use MarcinJozwikowski\EasyAdminPrettyUrls\Command\DebugPrettyRoutesCommand;
+use MarcinJozwikowski\EasyAdminPrettyUrls\Command\DumpRoutesDefinitions;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyRoutesLoader;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,19 +17,19 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
- * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Command\DebugPrettyRoutesCommand
+ * @covers \MarcinJozwikowski\EasyAdminPrettyUrls\Command\DumpRoutesDefinitions
  */
-class DebugPrettyRoutesCommandTest extends TestCase
+class DumpRoutesDefinitionsCommandTest extends TestCase
 {
     private PrettyRoutesLoader|MockObject $routesLoader;
-    private DebugPrettyRoutesCommand $testedClass;
+    private DumpRoutesDefinitions $testedClass;
 
     public function setUp(): void
     {
         parent::setUp();
 
         $this->routesLoader = $this->createMock(PrettyRoutesLoader::class);
-        $this->testedClass = new DebugPrettyRoutesCommand($this->routesLoader);
+        $this->testedClass = new DumpRoutesDefinitions($this->routesLoader, true);
     }
 
     /**
@@ -38,6 +38,8 @@ class DebugPrettyRoutesCommandTest extends TestCase
     public function testExecution(): void
     {
         $resource = md5(random_bytes(random_int(6, 8)));
+        $resource2 = md5(random_bytes(random_int(6, 8)));
+        $resource3 = md5(random_bytes(random_int(6, 8)));
         $routes = new RouteCollection();
         $routes->add(
             name: 'routeName',
@@ -45,7 +47,8 @@ class DebugPrettyRoutesCommandTest extends TestCase
                 path: '/path/to/name',
                 defaults: [
                     PrettyUrlsGenerator::EA_FQCN => $resource,
-                    PrettyUrlsGenerator::EA_ACTION => $resource,
+                    PrettyUrlsGenerator::EA_ACTION => $resource2,
+                    PrettyUrlsGenerator::MENU_PATH => $resource3,
                 ],
             ),
         );
@@ -59,17 +62,20 @@ class DebugPrettyRoutesCommandTest extends TestCase
         $result = $tester->execute(['resource' => $resource]);
 
         self::assertEquals(Command::SUCCESS, $result);
-        self::assertEquals($this->getFormatterResponse($resource), $tester->getDisplay());
+        self::assertEquals($this->getFormatterResponse($resource, $resource2, $resource3), $tester->getDisplay());
     }
 
-    private function getFormatterResponse(string $resource)
+    private function getFormatterResponse(string $resource, string $resource2, string $resource3)
     {
         return <<<RESPONSE
-+-----------+---------------+----------------------------------+----------------------------------+
-| Name      | Path          | CRUD Controller                  | CRUD Action                      |
-+-----------+---------------+----------------------------------+----------------------------------+
-| routeName | /path/to/name | $resource | $resource |
-+-----------+---------------+----------------------------------+----------------------------------+
+routeName:
+  path: /path/to/name
+  controller: 
+  defaults:
+      crudControllerFqcn: {$resource}
+      crudAction: {$resource2}
+      menuPath: {$resource3}
+
 
 RESPONSE;
     }

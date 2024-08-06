@@ -21,7 +21,7 @@ class DumpRoutesDefinitions extends Command
     public function __construct(
         private PrettyRoutesLoader $prettyRoutesLoader,
         private bool $prettyUrlsIncludeMenuIndex,
-        string $name = null,
+        ?string $name = null,
     ) {
         parent::__construct($name);
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests;
+namespace MarcinJozwikowski\EasyAdminPrettyUrls\Tests\Routing;
 
 use Exception;
 use MarcinJozwikowski\EasyAdminPrettyUrls\Routing\PrettyUrlsGenerator;
