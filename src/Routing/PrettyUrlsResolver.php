@@ -19,7 +19,7 @@ class PrettyUrlsResolver
     public function resolveToParams(string $path): array
     {
         // defaults from the route
-        $requestParams = $this->router->match(parse_url($path, PHP_URL_PATH));
+        $requestParams = $this->router->match($this->resolveToPath($path));
 
         // additional values from the query string
         $requestQueryParams = [];
@@ -29,5 +29,10 @@ class PrettyUrlsResolver
         }
 
         return array_merge($requestParams, $requestQueryParams);
+    }
+
+    public function resolveToPath(string $path): string
+    {
+        return parse_url($path, PHP_URL_PATH);
     }
 }

@@ -30,6 +30,8 @@ use const ARRAY_FILTER_USE_KEY;
 class PrettyMenuItemMatcher implements MenuItemMatcherInterface
 {
     private array $requestParameters;
+    private string $requestPath;
+    private string $requestShemeAndHost;
 
     public function __construct(
         private MenuItemMatcher $menuItemMatcher,
@@ -46,24 +48,35 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     public function isSelected(MenuItemDto $menuItemDto): bool
     {
         $adminContext = $this->adminContextProvider->getContext();
-        if (null === $adminContext || $menuItemDto->isMenuSection()) {
+        if (null === $adminContext || $menuItemDto->isMenuSection() || $menuItemDto->getType() === MenuItemDto::TYPE_SUBMENU) {
             return false;
-        }
-
-        try {
-            // get a matching route based on menuItem link URI
-            $menuRouteParams = $this->prettyUrlsResolver->resolveToParams($menuItemDto->getLinkUrl());
-        } catch (ResourceNotFoundException) {
-            // error fetching route - just pass through to EA matcher
-            return $this->menuItemMatcher->isSelected($menuItemDto);
         }
 
         // ensure current request parameters are loaded
         $this->setUpRequestParameters($adminContext);
 
+        if ($menuItemDto->getType() === MenuItemDto::TYPE_URL) {
+            $menuUrl = strtok($menuItemDto->getLinkUrl(), '?'); // drop the query params from URL
+            if (str_starts_with($menuUrl, '/')) {
+                // if the link is a relative one - compare it against path
+                return $menuUrl === $this->requestPath;
+            }
+
+            // absolute path - compare it against schema, domain, and path
+            return $menuUrl === $this->requestShemeAndHost.$this->requestPath;
+        }
+
+        try {
+            // get a matching route based on menuItem link URI
+            $menuRouteParamsRaw = $this->prettyUrlsResolver->resolveToParams($menuItemDto->getLinkUrl());
+        } catch (ResourceNotFoundException) {
+            // error fetching route - just pass through to EA matcher
+            return $this->menuItemMatcher->isSelected($menuItemDto);
+        }
+
         // remove parameters not used in comparison
-        $menuItemLinksToIndexCrudAction = Crud::PAGE_INDEX === ($menuRouteParams[EA::CRUD_ACTION] ?? false);
-        $menuRouteParams = $this->filterIrrelevantQueryParameters($menuRouteParams, $menuItemLinksToIndexCrudAction);
+        $menuItemLinksToIndexCrudAction = Crud::PAGE_INDEX === ($menuRouteParamsRaw[EA::CRUD_ACTION] ?? false);
+        $menuRouteParams = $this->filterIrrelevantQueryParameters($menuRouteParamsRaw, $menuItemLinksToIndexCrudAction);
         $requestParameters = $this->filterIrrelevantQueryParameters($this->requestParameters, $menuItemLinksToIndexCrudAction);
 
         return $requestParameters === $menuRouteParams;
@@ -101,6 +114,8 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
         }
 
         $this->requestParameters = $this->prettyUrlsResolver->resolveToParams($adminContext->getRequest()->getUri());
+        $this->requestPath = $this->prettyUrlsResolver->resolveToPath($adminContext->getRequest()->getUri());
+        $this->requestShemeAndHost = $adminContext->getRequest()->getSchemeAndHttpHost();
     }
 
     private function filterIrrelevantQueryParameters(array $queryStringParameters, bool $menuItemLinksToIndexCrudAction): array
