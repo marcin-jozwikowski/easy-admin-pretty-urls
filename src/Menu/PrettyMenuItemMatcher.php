@@ -29,6 +29,13 @@ use const ARRAY_FILTER_USE_KEY;
  */
 class PrettyMenuItemMatcher implements MenuItemMatcherInterface
 {
+    private const NEVER_SELECTED_MENU_TYPES = [
+        MenuItemDto::TYPE_SECTION,
+        MenuItemDto::TYPE_SUBMENU,
+        MenuItemDto::TYPE_EXIT_IMPERSONATION,
+        MenuItemDto::TYPE_LOGOUT,
+    ];
+
     private array $requestParameters;
     private string $requestPath;
     private string $requestShemeAndHost;
@@ -48,7 +55,7 @@ class PrettyMenuItemMatcher implements MenuItemMatcherInterface
     public function isSelected(MenuItemDto $menuItemDto): bool
     {
         $adminContext = $this->adminContextProvider->getContext();
-        if (null === $adminContext || $menuItemDto->isMenuSection() || $menuItemDto->getType() === MenuItemDto::TYPE_SUBMENU) {
+        if (null === $adminContext || in_array($menuItemDto->getType(), self::NEVER_SELECTED_MENU_TYPES)) {
             return false;
         }
 

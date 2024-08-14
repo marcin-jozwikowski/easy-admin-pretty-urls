@@ -111,10 +111,13 @@ class PrettyMenuItemMatcherTest extends TestCase
         self::assertSame($expectedResult, $this->tested->isSelected($menuItem2));
     }
 
-    public function testSelectedForMenuSection(): void
+    /**
+     * @dataProvider neverSelectedMenuTypesProvider
+     */
+    public function testNeverSelectedMenuTypes(string $type): void
     {
         $menuItem = new MenuItemDto();
-        $menuItem->setType(MenuItemDto::TYPE_SECTION);
+        $menuItem->setType($type);
 
         self::assertFalse($this->tested->isSelected($menuItem));
     }
@@ -368,6 +371,16 @@ class PrettyMenuItemMatcherTest extends TestCase
             ['/some/path/further', '/some/path', false],
             ['/some/path', '/some/path/further', false],
             ['/some/path/'.$url, '/some/path/1'.$url, false],
+        ];
+    }
+
+    public function neverSelectedMenuTypesProvider(): array
+    {
+        return  [
+            'section' => [MenuItemDto::TYPE_SECTION],
+            'submenu' => [MenuItemDto::TYPE_SUBMENU],
+            'exitImpersonation' => [MenuItemDto::TYPE_EXIT_IMPERSONATION],
+            'logout' => [MenuItemDto::TYPE_LOGOUT],
         ];
     }
 }
