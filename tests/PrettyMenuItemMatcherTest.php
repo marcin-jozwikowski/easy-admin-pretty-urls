@@ -376,7 +376,7 @@ class PrettyMenuItemMatcherTest extends TestCase
 
     public function neverSelectedMenuTypesProvider(): array
     {
-        return  [
+        return [
             'section' => [MenuItemDto::TYPE_SECTION],
             'submenu' => [MenuItemDto::TYPE_SUBMENU],
             'exitImpersonation' => [MenuItemDto::TYPE_EXIT_IMPERSONATION],
